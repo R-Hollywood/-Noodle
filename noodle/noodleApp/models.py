@@ -29,7 +29,7 @@ class Staff(models.Model):
 	
 	#is this field actually necessary?
 	#I don't think so, but I included it for the time being
-	maintainedBy = models.ManyToManyField(Admin, related_name = 'maintenanceOf')
+	staMaintainedBy = models.ManyToManyField(Admin, related_name = 'staMaintenanceOf')
 
 	def __str__(self): 
 		return self.name
@@ -37,15 +37,8 @@ class Staff(models.Model):
 	def __unicode__(self): 
 		return self.name
 
-class Student(models.Model):
-	#'inheritance'
-	user = models.OneToOneField(User, blank = False)
-	
-	subject = models.CharField(max_length = 128)
-	yearOfStudy = models.IntegerField(default = 1)
-	
-	enrolledIn = models.ManyToManyField(Course, related_name = 'students')
-	maintainedBy = models.ManyToManyField(Admin, related_name = 'maintenanceOf')
+class Subject(models.Model):
+	name = models.CharField(max_length = 128)
 	
 	def __str__(self): 
 		return self.name
@@ -64,7 +57,7 @@ class Course(models.Model):
 	subject = models.ForeignKey(Subject)
 	
 	staffManagers = models.ManyToManyField(Staff, related_name = 'courses')
-	maintainedBy = models.ManyToManyField(Admin, related_name = 'maintenanceOf')
+	couMaintainedBy = models.ManyToManyField(Admin, related_name = 'couMaintenanceOf')
 	
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
@@ -76,8 +69,15 @@ class Course(models.Model):
 	def __unicode__(self): 
 		return self.name
 		
-class Subject(models.Model):
-	name = models.CharField(max_length = 128)
+class Student(models.Model):
+	#'inheritance'
+	user = models.OneToOneField(User, blank = False)
+	
+	subject = models.CharField(max_length = 128)
+	yearOfStudy = models.IntegerField(default = 1)
+	
+	enrolledIn = models.ManyToManyField(Course, related_name = 'students')
+	stuMaintainedBy = models.ManyToManyField(Admin, related_name = 'stuMaintenanceOf')
 	
 	def __str__(self): 
 		return self.name
@@ -87,7 +87,7 @@ class Subject(models.Model):
 
 class Material(models.Model):
 
-	name = models.CharField(max_length = 128)
+	name = models.CharField(max_length = 128, primary_key = True)
 	visibility = models.BooleanField()
 	#I'm assuming we're going to need different urls for each piece of material here
 	slug = models.SlugField(unique=True)
@@ -108,7 +108,7 @@ class Material(models.Model):
 
 class File(models.Model):
 	#'inheritance'
-	material = models.OneToOneField(Material, blank = False)
+	material = models.OneToOneField(Material, primary_key = True)
 	
 	#should there be some other attribute here to hold the contents of a file?
 
@@ -120,7 +120,7 @@ class File(models.Model):
 
 class Assessment(models.Model):
 	#'inheritance'
-	material = models.OneToOneField(Material, blank = False)
+	material = models.OneToOneField(Material, primary_key = True)
 	
 	deadline = models.DateTimeField()
 	submissionDate = models.DateTimeField()
