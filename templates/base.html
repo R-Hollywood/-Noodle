@@ -21,12 +21,12 @@
 				<a href="index.html"><img src="{% static "images/logo.gif" %}" alt="Noodle Logo" /></a>
 				<nav id="nav">
 					{% if user.is_authenticated %}
-						<li><a href="{% url 'rango:mypage' %}">MyNoodle</a></li>
-						<li><a "{% url 'rango:logout' %}">Logout</a></li>
+						<li><a href="{% url 'noodle:mypage' %}">MyNoodle</a></li>
+						<li><a "{% url 'noodle:logout' %}">Logout</a></li>
 					{% else %}
 					<ul>
-						<li><a href="{% url 'rango:login' %}">Login</a></li>
-						<li><a href="{% url 'rango:register' %}">Register</a></li>
+						<li><a href="{% url 'noodle:login' %}">Login</a></li>
+						<li><a href="{% url 'noodle:register' %}">Register</a></li>
 					</ul>
 					{% endif %}
 				</nav>
