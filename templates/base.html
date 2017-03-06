@@ -4,10 +4,10 @@
 	
 	<html>
 	<head>
+		
 		<title>
 			{% block title_block %} 
 				Noodle 
-				<link rel="stylesheet" type="text/css" href="C:/Users/Rachel-Anne/workspace/Noodle/templates/stylesheet.css">
 			{% endblock %}
 		</title>
 	</head>
@@ -22,7 +22,7 @@
 				<nav id="nav">
 					{% if user.is_authenticated %}
 						<li><a href="{% url 'noodle:mypage' %}">MyNoodle</a></li>
-						<li><a "{% url 'noodle:logout' %}">Logout</a></li>
+						<li><a href="{% url 'noodle:logout' %}">Logout</a></li>
 					{% else %}
 					<ul>
 						<li><a href="{% url 'noodle:login' %}">Login</a></li>
