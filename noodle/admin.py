@@ -1,5 +1,5 @@
 from django.contrib import admin
-from noodleApp.models import Admin, Staff, Student, Course, Subject, Material, File, Assessment
+from noodle.models import Admin, Staff, Student, Course, Subject, Material, File, Assessment
 
 admin.site.register(Admin)
 admin.site.register(Staff)

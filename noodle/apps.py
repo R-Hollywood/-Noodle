@@ -4,4 +4,4 @@ from django.apps import AppConfig
 
 
 class NoodleappConfig(AppConfig):
-    name = 'noodleApp'
+    name = 'noodle'
