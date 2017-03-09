@@ -11,8 +11,8 @@ class Admin(models.Model):
 	user = models.OneToOneField(User, blank = False)
 	
 	def save(self, *args, **kwargs):
-		user.is_superuser = True
-		super(Category, self).save(*args, **kwargs)
+		#user.is_superuser = True
+		super(Admin, self).save(*args, **kwargs)
 	
 	def __str__(self): 
 		return self.name
@@ -29,7 +29,7 @@ class Staff(models.Model):
 	
 	#is this field actually necessary?
 	#I don't think so, but I included it for the time being
-	staMaintainedBy = models.ManyToManyField(Admin, related_name = 'staMaintenanceOf')
+	#staMaintainedBy = models.ManyToManyField(Admin, related_name = 'staMaintenanceOf')
 
 	def __str__(self): 
 		return self.name
@@ -57,11 +57,11 @@ class Course(models.Model):
 	subject = models.ForeignKey(Subject)
 	
 	staffManagers = models.ManyToManyField(Staff, related_name = 'courses')
-	couMaintainedBy = models.ManyToManyField(Admin, related_name = 'couMaintenanceOf')
+	#couMaintainedBy = models.ManyToManyField(Admin, related_name = 'couMaintenanceOf')
 	
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
-		super(Category, self).save(*args, **kwargs)
+		super(Course, self).save(*args, **kwargs)
 
 	def __str__(self): 
 		return self.name
@@ -77,7 +77,7 @@ class Student(models.Model):
 	yearOfStudy = models.IntegerField(default = 1)
 	
 	enrolledIn = models.ManyToManyField(Course, related_name = 'students')
-	stuMaintainedBy = models.ManyToManyField(Admin, related_name = 'stuMaintenanceOf')
+	#stuMaintainedBy = models.ManyToManyField(Admin, related_name = 'stuMaintenanceOf')
 	
 	def __str__(self): 
 		return self.name
@@ -92,13 +92,14 @@ class Material(models.Model):
 	#I'm assuming we're going to need different urls for each piece of material here
 	slug = models.SlugField(unique=True)
 	
-	accessedBy = models.ManyToManyField(Student, related_name = 'hasAccess')
+	#actually, I think this is an implicit relationship from the student accessing the course
+	#accessedBy = models.ManyToManyField(Student, related_name = 'hasAccess')
 	courseFrom = models.ForeignKey(Course, related_name = 'material')
 	createdBy = models.ForeignKey(Staff, related_name = 'createdMaterial', blank = False)
 
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
-		super(Category, self).save(*args, **kwargs)
+		super(Material, self).save(*args, **kwargs)
 		
 	def __str__(self): 
 		return self.name
