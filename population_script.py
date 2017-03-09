@@ -117,7 +117,7 @@ def populate():
 	for admin in admins:
 		add_admin(User.objects.create_user(username = admin['email'],
 					email = admin['email'], password = admin['password'],
-					first_name = admin['fname'], last_name = admin['sname'])[0])
+					first_name = admin['fname'], last_name = admin['sname']))
 					
 	staffMs = []
 	for staffM in staff:
@@ -133,6 +133,7 @@ def populate():
 					student['subject'], student['yearOfStudy'])
 					
 	staffBySubject = {}
+
 	for subject in subjects:
 		add_subject(subject)
 		staffBySubject[subject] = []
@@ -141,6 +142,7 @@ def populate():
 				staffBySubject[subject].append(staffM)
 				
 	for course in courses:
+
 		managers = []
 		#here we assume all staff members belonging to a course are managers
 		for staffM in staffMs[course['subject']]:
@@ -154,6 +156,7 @@ def populate():
 		for course in courses:
 			if(course['name'] == file['course']):
 				subject = course['subject']
+		#here we just take the first staff member for any given subject
 		staffCreator = staffBySubject[subject][0]
 		add_file(add_material(file['name'], file['visibility'],
 					file['course'], staffCreator))
@@ -167,6 +170,10 @@ def populate():
 		add_assessment(add_material(assessment['name'], assessment['visibility'],
 						assessment['course'], staffCreator),
 						assessment['deadline'], assessment['submission'])
+						
+def add_user(email, password, fname, lname):
+	
+	
 	
 def add_admin(user):
 	a = Admin.objects.get_or_create(user = user)[0]

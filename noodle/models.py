@@ -18,7 +18,7 @@ class Admin(models.Model):
 		return self.name
 		
 	def __unicode__(self): 
-		return self.name
+		return user.Objects.name
 
 class Staff(models.Model):
 	#'inheritance'
