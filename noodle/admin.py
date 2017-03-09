@@ -1,5 +1,6 @@
 from django.contrib import admin
 from noodle.models import Admin, Staff, Student, Course, Subject, Material, File, Assessment
+from noodle.models import UserProfile
 
 admin.site.register(Admin)
 admin.site.register(Staff)
@@ -9,3 +10,4 @@ admin.site.register(Subject)
 admin.site.register(Material)
 admin.site.register(File)
 admin.site.register(Assessment)
+admin.site.register(UserProfile)

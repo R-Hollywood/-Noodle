@@ -131,3 +131,15 @@ class Assessment(models.Model):
 		
 	def __unicode__(self): 
 		return self.name
+
+
+class UserProfile(models.Model):
+		# Links UserProfile to a User model instance
+	user = models.ImageField(upload_to='profile_images', blank=True)
+
+	def __str__(self):
+		return self.user.username
+
+
+	def __unicode__(self):
+		return self.user.username
