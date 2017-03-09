@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-	<!% load rango_template_tags %>
-	<!The equivalent doesn't exist yet, so I left this here rather than just fixing it, but we shouldn't be trying to load things from rango.>
-	<!I removed the {} from the expression because it still tries to call it otherwise.>
+	
 	{% load staticfiles %}
 	
 	<html>
+	<link rel="stylesheet" type="text/css" href="{% static "css/stylesheet.css" %}">
 	<head>
-		
 		<title>
 			{% block title_block %} 
 				Noodle 
@@ -14,11 +12,10 @@
 		</title>
 	</head>
 	<body>
-			
+	
 		
+	<div>	
 		
-	{% block body_block %}
-		<div>
 			<header id="header">
 				<a href="index.html"><img src="{% static "images/logo.gif" %}" alt="Noodle Logo" /></a>
 				<nav id="nav">
@@ -27,16 +24,14 @@
 						<li><a href="{% url 'noodle:logout' %}">Logout</a></li>
 					{% else %}
 					<ul>
-						<li><a href="{% url 'noodle:login' %}">Login</a></li>
-						<li><a href="{% url 'noodle:register' %}">Register</a></li>
+						
 					</ul>
 					{% endif %}
 				</nav>
 			</header>
-			
-		</div>
+
+	</div>
+	{% block body_block %}
 	{% endblock %}
-		
-		
 	</body>
 	</html>
