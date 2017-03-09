@@ -115,7 +115,7 @@ def populate():
 		 'submissionDate': datetime.datetime(2017,02,24)}]
 		 
 	for admin in admins:
-		add_admin(User.objects.get_or_create(username = admin['email'],
+		add_admin(User.objects.create_user(username = admin['email'],
 					email = admin['email'], password = admin['password'],
 					first_name = admin['fname'], last_name = admin['sname'])[0])
 					
