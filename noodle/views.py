@@ -84,6 +84,10 @@ def add_course(request, subject_name_slug):
     context_dict = {'form':form, 'subject': subject}
     return render(request, 'noodle/add_course.html', context_dict)
 
+def register(request):
+	context_dict = {}
+	return render(request,'noodle/register.html', context_dict)
+	
 def registerStaff(request):
 	registered = False
 	if request.method == 'POST':
@@ -104,7 +108,7 @@ def registerStaff(request):
 	else:
 		user_form = UserForm()
 		profile_form = StaffUserProfileForm()
-	return render(request, 'noodle/register.html',
+	return render(request, 'noodle/registerStaff.html',
 		{'user_form': user_form,
 		'profile_form': profile_form,
 		'registered': registered})
@@ -129,7 +133,7 @@ def registerStudent(request):
 	else:
 		user_form = UserForm()
 		profile_form = StudentUserProfileForm()
-	return render(request, 'noodle/register.html',
+	return render(request, 'noodle/registerStudent.html',
 		{'user_form': user_form,
 		'profile_form': profile_form,
 		'registered': registered})		
