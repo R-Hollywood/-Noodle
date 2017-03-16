@@ -7,3 +7,6 @@ class DocumentForm(forms.Form):
     docfile = forms.FileField(
         label='Select a file'
     )
+
+class PageForm(forms.Form):
+    
