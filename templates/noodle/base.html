@@ -17,7 +17,7 @@
 	<div>	
 		
 			<header id="header">
-				<a href="index.html"><img src="{% static "images/logo.gif" %}" alt="Noodle Logo" /></a>
+				<img src="{% static "images/logo.gif" %}" alt="Noodle Logo" /></a>
 				<nav id="nav">
 					{% if user.is_authenticated %}
 						<li><a href="{% url 'noodle:mypage' %}">MyNoodle</a></li>

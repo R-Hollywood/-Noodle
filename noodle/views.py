@@ -36,9 +36,11 @@ def home(request):
 	
 	response = render(request, 'noodle/homepage_extends_base.html', context=context_dict)
 	return response
+
+@login_required
 def teachhome(request):
         return render(request,'noodle/teachhome.html', {})
-	
+@login_required	
 def show_subject(request, subject_name_slug):
 	context_dict = {}
 	try:
@@ -50,7 +52,8 @@ def show_subject(request, subject_name_slug):
 		context_dict['subject'] = None
 		context_dict['course'] = None
 	return render(request, 'noodle/subject.html', context_dict)
-	
+
+@login_required	
 def add_assignment(request):
 	form = AssignmentForm()
 	if request.method == 'POST':
@@ -62,7 +65,7 @@ def add_assignment(request):
 		else:
 			print(form.errors)
 	return render(request, 'noodle/add_assignement.html', {'form': form})
-	
+@login_required	
 def add_subject(request):
 	form = SubjectForm()
 	if request.method == 'POST':
@@ -74,7 +77,7 @@ def add_subject(request):
 		else:
 			print(form.errors)
 	return render(request, 'noodle/add_subject.html', {'form': form})
-
+@login_required
 def add_course(request, subject_name_slug):
     try:
         course =  Course.objects.get(slug=subject_name_slug)
@@ -148,4 +151,4 @@ def user_logout(request):
 	# Since we know the user is logged in, we can now just log them out.
 	logout(request)
 	# Take the user back to the homepage.
-	return HttpResponseRedirect(reverse('index'))
+	return HttpResponseRedirect(reverse('home'))
