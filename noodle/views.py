@@ -53,6 +53,18 @@ def show_subject(request, subject_name_slug):
 	return render(request, 'noodle/subject.html', context_dict)
 	
 def add_subject(request):
+	form = AssignmentForm()
+	if request.method == 'POST':
+		form = AssignmentForm(request.POST)
+		if form.is_valid():
+			ass= form.save(commit=True)
+			print(ass, ass.slug)
+			return index(request)
+		else:
+			print(form.errors)
+	return render(request, 'noodle/add_assignement.html', {'form': form})
+	
+def add_subject(request):
 	form = SubjectForm()
 	if request.method == 'POST':
 		form = SubjectForm(request.POST)
