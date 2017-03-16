@@ -11,14 +11,14 @@ class Admin(models.Model):
 	user = models.OneToOneField(User, blank = False)
 	
 	def save(self, *args, **kwargs):
-		#user.is_superuser = True
+		self.user.is_superuser = True
 		super(Admin, self).save(*args, **kwargs)
 	
 	def __str__(self): 
-		return self.name
+		return self.user.username
 		
 	def __unicode__(self): 
-		return user.Objects.name
+		return self.user.username
 
 class Staff(models.Model):
 	#'inheritance'
@@ -32,10 +32,10 @@ class Staff(models.Model):
 	#staMaintainedBy = models.ManyToManyField(Admin, related_name = 'staMaintenanceOf')
 
 	def __str__(self): 
-		return self.name
+		return self.user.username
 		
 	def __unicode__(self): 
-		return self.name
+		return self.user.username
 
 class Subject(models.Model):
 	name = models.CharField(max_length = 128)
@@ -64,7 +64,7 @@ class Course(models.Model):
 		super(Course, self).save(*args, **kwargs)
 
 	def __str__(self): 
-		return self.name
+		return self.name + "," + self.slug
 		
 	def __unicode__(self): 
 		return self.name
@@ -80,10 +80,10 @@ class Student(models.Model):
 	#stuMaintainedBy = models.ManyToManyField(Admin, related_name = 'stuMaintenanceOf')
 	
 	def __str__(self): 
-		return self.name
+		return self.user.username
 		
 	def __unicode__(self): 
-		return self.name
+		return self.user.username
 
 class Material(models.Model):
 

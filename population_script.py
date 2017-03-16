@@ -9,6 +9,7 @@ import datetime
 
 from django.contrib.auth.models import User
 from noodle.models import Admin, Staff, Student, Course, Subject, Material, File, Assessment
+from django.template.defaultfilters import slugify
 
 def populate():
 
@@ -33,8 +34,8 @@ def populate():
 		 'status': "Dead"},
 		{'email': "constantinople@email.com",
 		 'password': "WhyIsTheRumGone9001",
-		 'fname': "Mehmet II",
-		 'sname': "Fatih",
+		 'fname': "Mehmed II",
+		 'sname': "Osman",
 		 'subject': "History",
 		 'status': "Dead"},
 		{'email': "socialContract@email.com",
@@ -88,16 +89,13 @@ def populate():
 	courses = [
 		{'name': 'History2',
 		 'courseID': '2H',
-		 'subject': 'History',
-		 'managers': []},
+		 'subject': 'History'},
 		{'name': 'Philosophy2',
 		 'courseID': '2P',
-		 'subject': 'Philosophy',
-		 'managers': []},
+		 'subject': 'Philosophy'},
 		{'name': 'Mathematics2',
 		 'courseID': '2M',
-		 'subject': 'Mathematics',
-		 'managers': []}]
+		 'subject': 'Mathematics'}]
 		 
 	files = [
 		{'name': 'CityOfWorldsDesire', 
@@ -115,47 +113,59 @@ def populate():
 		 'submissionDate': datetime.datetime(2017,02,24)}]
 		 
 	for admin in admins:
-		add_admin(User.objects.create_user(username = admin['email'],
-					email = admin['email'], password = admin['password'],
-					first_name = admin['fname'], last_name = admin['sname']))
-					
+		add_admin(add_user(admin['email'], admin['password'], 
+							admin['fname'], admin['sname']))
+			
+	#store this to populate later fields
 	staffMs = []
 	for staffM in staff:
-		staffMs.append(add_staff(User.objects.create_user(username = staffM['email'],
-						email = staffM['email'], password = staffM['password'],
-						first_name = staffM['fname'], last_name = staffM['sname']),
-					staffM['subject'], staffM['status']))
-				  
-	for student in students:
-		add_student(User.objects.create_user(username = student['email'],
-						email = student['email'], password = student['password'],
-						first_name = student['fname'], last_name = student['sname']),
-					student['subject'], student['yearOfStudy'])
-					
+		staffMs.append(add_staff(add_user(staffM['email'], staffM['password'], 
+											staffM['fname'], staffM['sname']),
+								 staffM['subject'], staffM['status']))
+			
+	subjectMs = {}
+	#staff reorganised for convenience
 	staffBySubject = {}
+	coursesBySubject = {}
 
 	for subject in subjects:
-		add_subject(subject)
+		subjectMs[subject] = add_subject(subject)
+		
 		staffBySubject[subject] = []
+		coursesBySubject[subject] = []
+		
 		for staffM in staffMs:
 			if(staffM.subject == subject):
 				staffBySubject[subject].append(staffM)
 				
+		for course in courses:
+			if(course['subject'] == subject):
+				coursesBySubject[subject].append(course)
+				
 	for course in courses:
-
+	
 		managers = []
 		#here we assume all staff members belonging to a course are managers
-		for staffM in staffMs[course['subject']]:
+		for staffM in staffBySubject[course['subject']]:
 			managers.append(staffM)
-		
 		add_course(course['name'], course['courseID'],
-					course['subject'], managers)
+					subjectMs[course['subject']], managers)
+					
+	for student in students:
+	
+		courseL = []
+		for course in courses:
+			courseL.append(course)
+		add_student(add_user(student['email'], student['password'], 
+							 student['fname'], student['sname']),
+					student['subject'], student['yearOfStudy'], courseL)
 					
 	for file in files:
 		subject = ''
 		for course in courses:
 			if(course['name'] == file['course']):
 				subject = course['subject']
+				break
 		#here we just take the first staff member for any given subject
 		staffCreator = staffBySubject[subject][0]
 		add_file(add_material(file['name'], file['visibility'],
@@ -166,6 +176,7 @@ def populate():
 		for course in courses:
 			if(course['name'] == assessment['course']):
 				subject = course['subject']
+				break
 		staffCreator = staffBySubject[subject][0]
 		add_assessment(add_material(assessment['name'], assessment['visibility'],
 						assessment['course'], staffCreator),
@@ -173,12 +184,16 @@ def populate():
 						
 def add_user(email, password, fname, lname):
 	
-	
-	
+	#necessary to do this rather than get_or_create because create_user hashes passwords
+	try:
+		return User.objects.get(username = email)
+	except User.DoesNotExist:
+		return User.objects.create_user(username = email,
+					email = email, password = password,
+					first_name = fname, last_name = lname)
+
 def add_admin(user):
-	a = Admin.objects.get_or_create(user = user)[0]
-	a.save()
-	return a
+	return Admin.objects.get_or_create(user = user)[0]
 
 def add_staff(user, subject, status):
 	s = Staff.objects.get_or_create(user = user)[0]
@@ -192,21 +207,18 @@ def add_student(user, subject, yearOfStudy, courses):
 	s.subject = subject
 	s.yearOfStudy = yearOfStudy
 	for course in courses:
-		s.enrolledIn.append(course)
+		s.enrolledIn.add(course)
 	s.save()
 	return s
 
 def add_subject(name):
-	s = Subject.objects.get_or_create(name = name)[0]
-	s.save()
-	return s
+	return Subject.objects.get_or_create(name = name)[0]
 
 def add_course(name, courseID, subject, managers):
-	c = Course.objects.get_or_create(name = name)[0]
+	c = Course.objects.get_or_create(name = name, subject = subject)[0]
 	c.courseID = courseID
-	c.subject = subject
 	for manager in managers:
-		m.staffManagers.append(manager)
+		c.staffManagers.add(manager)
 	c.save()
 	return c
 
@@ -219,9 +231,7 @@ def add_material(name, visibility, course, staffCreator):
 	return m
 	
 def add_file(material):
-	f = File.objects.get_or_create(material = material)[0]
-	f.save()
-	return f
+	return File.objects.get_or_create(material = material)[0]
 
 def add_assessment(material, deadline, submissionDate):
 	a = Assessment.objects.get_or_create(material = material)[0]
