@@ -39,7 +39,6 @@ def home(request):
 def teachhome(request):
         return render(request,'noodle/teachhome.html', {})
 	
-
 def show_subject(request, subject_name_slug):
 	context_dict = {}
 	try:
@@ -52,7 +51,7 @@ def show_subject(request, subject_name_slug):
 		context_dict['course'] = None
 	return render(request, 'noodle/subject.html', context_dict)
 	
-def add_subject(request):
+def add_assignment(request):
 	form = AssignmentForm()
 	if request.method == 'POST':
 		form = AssignmentForm(request.POST)
@@ -64,7 +63,7 @@ def add_subject(request):
 			print(form.errors)
 	return render(request, 'noodle/add_assignement.html', {'form': form})
 	
-def add_assignement(request):
+def add_subject(request):
 	form = SubjectForm()
 	if request.method == 'POST':
 		form = SubjectForm(request.POST)
