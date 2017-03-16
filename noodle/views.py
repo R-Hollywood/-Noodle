@@ -39,7 +39,6 @@ def home(request):
 def teachhome(request):
         return render(request,'noodle/teachhome.html', {})
 	
-
 def show_subject(request, subject_name_slug):
 	context_dict = {}
 	try:
