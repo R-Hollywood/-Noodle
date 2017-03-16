@@ -64,7 +64,7 @@ def add_subject(request):
 			print(form.errors)
 	return render(request, 'noodle/add_assignement.html', {'form': form})
 	
-def add_subject(request):
+def add_assignement(request):
 	form = SubjectForm()
 	if request.method == 'POST':
 		form = SubjectForm(request.POST)
