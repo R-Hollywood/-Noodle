@@ -5,6 +5,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE',
 import django
 django.setup()
 
+#note: the use of datetime objects may require running 'pip install pytz'
 import datetime
 
 from django.contrib.auth.models import User
@@ -16,8 +17,8 @@ def populate():
 	admins = [
 		{'email': "yaaaaaaah@email.com",
 		 'password': "Password0001",
-		 'fname': "howard",
-		 'sname': "dean"}]
+		 'fname': "Howard",
+		 'sname': "Dean"}]
 		 
 	staff = [
 		{'email': "habsburgSpain@email.com",
@@ -103,9 +104,9 @@ def populate():
 		 'course': 'History2'},
 		{'name': 'Leviathan',
 		 'visibility': False,
-		 'course': 'Philosophy'}]
+		 'course': 'Philosophy2'}]
 	
-	assessment = [
+	assessments = [
 		{'name': 'CityOfWorldsDesire', 
 		 'visibility': True, 
 		 'course': 'History2',
@@ -142,20 +143,17 @@ def populate():
 			if(course['subject'] == subject):
 				coursesBySubject[subject].append(course)
 				
+	courseL = []
 	for course in courses:
 	
 		managers = []
 		#here we assume all staff members belonging to a course are managers
 		for staffM in staffBySubject[course['subject']]:
 			managers.append(staffM)
-		add_course(course['name'], course['courseID'],
-					subjectMs[course['subject']], managers)
+		courseL.append(add_course(course['name'], course['courseID'],
+					subjectMs[course['subject']], managers))
 					
 	for student in students:
-	
-		courseL = []
-		for course in courses:
-			courseL.append(course)
 		add_student(add_user(student['email'], student['password'], 
 							 student['fname'], student['sname']),
 					student['subject'], student['yearOfStudy'], courseL)
@@ -166,10 +164,14 @@ def populate():
 			if(course['name'] == file['course']):
 				subject = course['subject']
 				break
+		for course in courseL:
+			if(course.name == file['course']):
+				pCourse = course
+				break
 		#here we just take the first staff member for any given subject
 		staffCreator = staffBySubject[subject][0]
 		add_file(add_material(file['name'], file['visibility'],
-					file['course'], staffCreator))
+					pCourse, staffCreator))
 	
 	for assessment in assessments:
 		subject = ''
@@ -177,10 +179,14 @@ def populate():
 			if(course['name'] == assessment['course']):
 				subject = course['subject']
 				break
+		for course in courseL:
+			if(course.name == assessment['course']):
+				pCourse = course
+				break
 		staffCreator = staffBySubject[subject][0]
 		add_assessment(add_material(assessment['name'], assessment['visibility'],
-						assessment['course'], staffCreator),
-						assessment['deadline'], assessment['submission'])
+									pCourse, staffCreator), assessment['deadline'], 
+									assessment['submissionDate'])
 						
 def add_user(email, password, fname, lname):
 	
@@ -217,28 +223,21 @@ def add_subject(name):
 def add_course(name, courseID, subject, managers):
 	c = Course.objects.get_or_create(name = name, subject = subject)[0]
 	c.courseID = courseID
+	c.subject = subject
 	for manager in managers:
 		c.staffManagers.add(manager)
 	c.save()
 	return c
 
 def add_material(name, visibility, course, staffCreator):
-	m = Material.objects.get_or_create(name = name)[0]
-	m.visibility = visibility
-	m.courseFrom = course
-	m.createdBy = staffCreator
-	m.save()
-	return m
+	return Material.objects.get_or_create(name = name, visibility = visibility, 
+										courseFrom = course, createdBy = staffCreator)[0]
 	
 def add_file(material):
 	return File.objects.get_or_create(material = material)[0]
 
 def add_assessment(material, deadline, submissionDate):
-	a = Assessment.objects.get_or_create(material = material)[0]
-	a.deadline = deadline
-	a.submissionDate = submissionDate
-	a.save()
-	return a
+	return Assessment.objects.get_or_create(material = material, deadline = deadline, submissionDate = submissionDate)[0]
 	
 #Start execution here!
 if __name__ == '__main__':

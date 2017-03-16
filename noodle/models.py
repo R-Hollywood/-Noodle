@@ -49,7 +49,6 @@ class Subject(models.Model):
 class Course(models.Model):
 
 	name = models.CharField(max_length = 128)
-	courseID = models.CharField(max_length = 128, primary_key = True)
 	#I'm assuming we're going to need different urls for each course page here
 	slug = models.SlugField(unique=True)
 	#I'm treating this as another object for ease of implementation
@@ -87,7 +86,7 @@ class Student(models.Model):
 
 class Material(models.Model):
 
-	name = models.CharField(max_length = 128, primary_key = True)
+	name = models.CharField(max_length = 128)
 	visibility = models.BooleanField()
 	#I'm assuming we're going to need different urls for each piece of material here
 	slug = models.SlugField(unique=True)
@@ -109,7 +108,7 @@ class Material(models.Model):
 
 class File(models.Model):
 	#'inheritance'
-	material = models.OneToOneField(Material, primary_key = True)
+	material = models.OneToOneField(Material, unique = True)
 	
 	#should there be some other attribute here to hold the contents of a file?
 
@@ -121,7 +120,7 @@ class File(models.Model):
 
 class Assessment(models.Model):
 	#'inheritance'
-	material = models.OneToOneField(Material, primary_key = True)
+	material = models.OneToOneField(Material, unique = True)
 	
 	deadline = models.DateTimeField()
 	submissionDate = models.DateTimeField()
