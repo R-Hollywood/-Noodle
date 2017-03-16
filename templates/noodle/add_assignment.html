@@ -1,0 +1,28 @@
+	{% extends 'noodle/base.html' %}
+	{% load staticfiles %}
+
+	{% block title_block %}
+	{% endblock %}
+	{% block body_block %}
+	
+			{% if course %}
+				<h1>Add an Assignment or File to {{course.name}}</h1>
+				<form id="page_form" method="post" action="/teachhome/{{% course_name %}}/add">
+					{% csrf_token %}
+					Add:<br>
+					Assignment:
+					<input type="radio" id="a" name="file_type" value="Assignment"> 
+					File:
+					<input type="radio" id="a" name="file_type" value="File"> 
+					
+					{% if file_type="Assignment" %}
+						
+					{% else if file_type="File" %}
+					{% endif %}
+						
+					<input type="submit" name="submit" value="Add" />
+				</form>
+			{% else %}
+				The specified course does not exist!
+			{% endif %}
+	 {% endblock %}
