@@ -36,15 +36,9 @@ def home(request):
 	
 	response = render(request, 'noodle/homepage_extends_base.html', context=context_dict)
 	return response
+def teachhome(request):
+        return render(request,'noodle/teachhome.html', {})
 	
-def about(request):
-
-	visitor_cookie_handler(request)
-	context_dict = {}
-	context_dict['visits'] = request.session['visits']
-	print(request.method)
-	print(request.user)
-	return render(request, 'noodle/about.html',context=context_dict)
 
 def show_subject(request, subject_name_slug):
 	context_dict = {}
@@ -56,7 +50,7 @@ def show_subject(request, subject_name_slug):
 	except Subject.DoesNotExist:
 		context_dict['subject'] = None
 		context_dict['course'] = None
-	return render(request, 'noodle/suject.html', context_dict)
+	return render(request, 'noodle/subject.html', context_dict)
 	
 def add_subject(request):
 	form = SubjectForm()

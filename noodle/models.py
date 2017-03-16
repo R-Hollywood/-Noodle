@@ -3,7 +3,10 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 
 from django.db import models
-	
+
+class Document(models.Model):
+    docfile = models.FileField(upload_to='documents/%Y/%m/%d')
+    
 class Admin(models.Model):
 	#name, password, email, forename and surname attributes are included with django's 'User' model
 	#in our case we should simply set the username to be the same as the email address

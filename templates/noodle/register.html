@@ -2,15 +2,15 @@
 {% load staticfiles %}
 
 	{% block title_block %} 
-		Register
+		Registration
 	{% endblock %}
 	{% block body_block %}
-		<h1>About Page</h1>
+		<h1>Registration</h1>
 		{% if registered %}
-			Rango says <strong>thank you for registering!</strong>
+			<h2>Thank you for Registering with Noodle.</h2>
 			<a href="{% url 'index' %}">Return to the homepage</a><br />
 		{% else %}
-			Rango says <strong>register here!</strong><br />
+			<strong>Register here!</strong><br />
 			<form id="user_form" method="post" action="{% url 'noodle:register' %}"
 				enctype="multipart/form.data">
 			{% csrf_token %}
