@@ -25,7 +25,7 @@
 					{% else %}
 					<ul>
 						<li><a href="{% url 'noodle:login' %}">Login</a></li>
-						<li><a href="{% url 'noodle:register' %}">Register</a></li>
+						<li><a href="{% url 'registration_register' %}">Register</a></li>
 					</ul>
 					{% endif %}
 				</nav>
@@ -34,9 +34,5 @@
 	</div>
 	{% block body_block %}
 	{% endblock %}
-	
-	{% if user.is_authenticated %}
-	
-	{% endif %}
 	</body>
 	</html>

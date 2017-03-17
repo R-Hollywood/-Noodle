@@ -9,5 +9,5 @@ urlpatterns = [
     url(r'^register/staff',views.registerStaff,name='registerStaff'),
 	url(r'^register/student',views.registerStudent,name='registerStudent'),
     url(r'teachhome/',views.teachhome, name='teachhome'),
-    url(r'teachhome/add_assessmentt',views.add_assessment, name='add_assessment'),
+    url(r'teachhome/add_assessment',views.add_assessment, name='add_assessment'),
         ]

@@ -1,14 +1,13 @@
 {% extends 'noodle/base.html' %}
 {% load staticfiles %}
 
-
-
 	{% block title_block %}
 	{% endblock %}
 
 	{% block body_block %}
 	<form id="UserForm" method="post" action="{% url 'noodle:registerStaff' %}" enctype="multipart/form.data">
 		{% csrf_token %}
+		
 		{{ UserForm.as_p}}
 		{{StaffUserProfileForm.as_p}}
 

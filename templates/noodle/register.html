@@ -1,20 +1,26 @@
 {% extends 'noodle/base.html'%}
 {% load staticfiles %}
-
 	{% block title_block %} 
 		Registration
 	{% endblock %}
+	
 	{% block body_block %}
+	<center>
+	<section id="main" class="wrapper">
+		<div class="container">
 		<h1>Registration</h1>
 		{% if registered %}
 			<h2>Thank you for Registering with Noodle.</h2>
 			<a href="{% url 'home' %}">Return to the homepage</a><br />
 		{% else %}
-			<strong>Staff Register here!</strong><br />
-			<a href="{% url 'noodle:registerStaff' %}">Staff Login</a><br />
-			<strong>Students Register here!</strong><br />
-			<a href="{% url 'noodle:registerStudent' %}">Student Login</a>
-
-			<strong>Register here!</strong><br />
+			<p><strong>Staff Register here!</strong><br />
+			<a href="{% url 'noodle:registerStaff' %}">Staff Login</a></p>
+			<p><strong>Students Register here!</strong><br />
+			<a href="{% url 'noodle:registerStudent' %}">Student Login</a></p>
+			
 		{% endif %}
+		</div>
+		</section>
+		</center>
 	{% endblock %}
+	

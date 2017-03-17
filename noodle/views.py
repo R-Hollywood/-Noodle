@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 def home(request):
-	request.session.set_test_cookie()
+	
 	subject_list = Subject.objects
 	course_list = Course.objects
 	context_dict = {'subject': subject_list, 'course': course_list}
@@ -21,7 +21,10 @@ def home(request):
 def teachhome(request):
 	context_dict = {}
 	return render(request,'noodle/teachhome.html', context_dict)
-		
+@login_required
+def studenthome(request):
+	context_dict = {}
+	return render(request,'noodle/teachhome.html', context_dict)		
 @login_required	
 def show_subject(request, subject_name_slug):
 	context_dict = {}

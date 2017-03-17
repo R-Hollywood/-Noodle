@@ -1,9 +1,16 @@
 {% extends "noodle/base.html" %}
 {% block body_block %}
+<center>
+	<section id="main" class="wrapper">
+		<div class="container">
 	<h1>Register Here</h1>
-<form method-"post" action=".">
+	</center>
+<form method-"post" action="{% url %}">
 	{% csrf_token %}
 	{{ form.as_p }}
 	<input type="submit" value="Submit" />
 </form>
+</div>
+</section>
+
 {% endblock %}
