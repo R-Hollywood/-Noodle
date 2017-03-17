@@ -10,22 +10,11 @@
 			<h2>Thank you for Registering with Noodle.</h2>
 			<a href="{% url 'home' %}">Return to the homepage</a><br />
 		{% else %}
-<<<<<<< HEAD
 			<strong>Staff Register here!</strong><br />
 			<a href="{% url 'noodle:registerStaff' %}">Staff Login</a><br />
 			<strong>Students Register here!</strong><br />
 			<a href="{% url 'noodle:registerStudent' %}">Student Login</a>
-=======
+
 			<strong>Register here!</strong><br />
-			<form id="user_form" method="post" action="/accounts/register/"
-				enctype="multipart/form.data">
->>>>>>> df05bbc19baf86b10e9de7e5e3ee06075850bb0f
-			{% csrf_token %}
-			
-			{{ user_form.as_p}}
-			{{ profile_form.as_p}}
-			
-			<input type="submit" name="submit" value="Register" />
-		</form>
 		{% endif %}
 	{% endblock %}
