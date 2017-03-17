@@ -7,10 +7,10 @@
 	{% endblock %}
 
 	{% block body_block %}
-	<form id="UserForm" method="post" action="{% url 'noodle:registerStudent' %}">
-	{% csrf_token %}
+	<form id="UserForm" method="post" action="{% url 'noodle:registerStudent' %}" enctype="multipart/form.data">
+		{% csrf_token %}
 		{{ UserForm.as_p}}
-		{{StudentUserProfileForm .as_p}}
-		<input type="submit" value="submit" />
+		{{StudentUserProfileForm.as_p}}
+		
 		<input type="submit" name="submit" value="Register" />
 	{% endblock %}
