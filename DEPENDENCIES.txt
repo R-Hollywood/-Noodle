@@ -1,0 +1,12 @@
+All the files required for the project to run.
+If you add a new dependency, please list it here.
+
+django ver 1.10.5
+pytz
+django-registration redux ver 1.4
+
+To add these, use:
+
+pip install django==1.10.5
+pip install pytz
+pip install django-registration-redux==1.4
