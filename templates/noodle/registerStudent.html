@@ -1,0 +1,17 @@
+{% extends 'noodle/base.html' %}
+{% load staticfiles %}
+
+
+
+	{% block title_block %}
+	{% endblock %}
+	
+	<center>
+	{% block body_block %}
+	<form id="StudentUserProfileForm" method-"post" action="{% url 'noodle:registerStudent' %}" enctype="multipart/form.data">
+		{% csrf_token %}
+		{{ form.as_p}}
+		{{StudentUserProfileForm.as_p}}
+		<input type="submit" name="submit" value="Register" />
+	{% endblock %}
+	</center>
