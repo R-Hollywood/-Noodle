@@ -8,7 +8,7 @@
 	
 	<center>
 	{% block body_block %}
-	<form id="StudentUserProfileForm" method-"post" action="{% url 'noodle:registerStudent' %}" enctype="multipart/form.data">
+	<form id="StudentUserProfileForm" method="post" action="{% url 'noodle:registerStudent' %}" enctype="multipart/form-data">
 		{% csrf_token %}
 		{{user_form.as_p}}
 		{{profile_form.as_p}}

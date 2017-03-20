@@ -22,7 +22,11 @@
 				<img src="{% static "images/logo.gif" %}" alt="Noodle Logo" /></a>
 				<nav id="nav">
 					{% if user.is_authenticated %}
-						<li><a href="{% url 'noodle:mypage' %}">MyNoodle</a></li>
+						{% if tier %}
+							<li><a href="{% url 'noodle:teachhome' %}">MyNoodle</a></li>
+						{% else %}
+							<li><a href="{% url 'noodle:studenthome' %}">MyNoodle</a></li>
+						{% endif %}
 						<li><a href="{% url 'noodle:logout' %}">Logout</a></li>
 					{% else %}
 					<ul>

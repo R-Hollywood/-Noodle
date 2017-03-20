@@ -8,6 +8,7 @@ urlpatterns= [ url(r'^$',views.home, name='homepage'),
 	url(r'^register/$',views.register,name='register'),
     url(r'^register/staff/$',views.registerStaff,name='registerStaff'),
 	url(r'^register/student/$',views.registerStudent,name='registerStudent'),
+    url(r'studenthome/',views.studenthome, name='studenthome'),
     url(r'teachhome/',views.teachhome, name='teachhome'),
 	
 	url(r'^(?P<subject_name_slug>[\w\-]+)/$', 
@@ -20,5 +21,5 @@ urlpatterns= [ url(r'^$',views.home, name='homepage'),
 	
 	url(r'^(?P<course_name_slug>[\w\-]+)/(?P<material_name_slug>[\w\-]+)/$', 
         views.show_assessment, name='show_assessment'),
-    url(r'teachhome/add_assessment',views.add_assessment, name='add_assessment'),
+    url(r'teachhome/add_assessment',views.add_material, name='add_material'),
         ]

@@ -11,7 +11,7 @@ class Admin(models.Model):
 	#name, password, email, forename and surname attributes are included with django's 'User' model
 	#in our case we should simply set the username to be the same as the email address
 	#because django has a lot involved in the underlying framework
-	user = models.OneToOneField(User, blank = False)
+	user = models.OneToOneField(User, blank = False, related_name = 'admin')
 	
 	def save(self, *args, **kwargs):
 		self.user.is_superuser = True
@@ -25,7 +25,7 @@ class Admin(models.Model):
 
 class Staff(models.Model):
 	#'inheritance'
-	user = models.OneToOneField(User, blank = False)
+	user = models.OneToOneField(User, blank = False, related_name = 'staff')
 	
 	subject = models.CharField(max_length = 128)
 	status = models.CharField(max_length = 128)
@@ -78,7 +78,7 @@ class Course(models.Model):
 		
 class Student(models.Model):
 	#'inheritance'
-	user = models.OneToOneField(User, blank = False)
+	user = models.OneToOneField(User, blank = False, related_name = 'student')
 	
 	subject = models.CharField(max_length = 128)
 	yearOfStudy = models.IntegerField(default = 1)
@@ -117,7 +117,7 @@ class Material(models.Model):
 class File(models.Model):
 	#'inheritance'
 	material = models.OneToOneField(Material, unique = True)
-	
+	file = models.FileField(blank = True)
 
 	def __str__(self): 
 		return self.name
@@ -128,6 +128,7 @@ class File(models.Model):
 class Assessment(models.Model):
 	#'inheritance'
 	material = models.OneToOneField(Material, unique = True)
+	submission = models.FileField(blank = True)
 	
 	deadline = models.DateTimeField()
 	submissionDate = models.DateTimeField()

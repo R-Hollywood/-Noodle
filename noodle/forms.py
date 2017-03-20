@@ -26,12 +26,18 @@ class MaterialForm(forms.ModelForm):
 	class Meta:
 		model = Material
 		exclude = ('courseFrom', 'createdBy',)
+		
+class FileForm(forms.ModelForm):
+	
+	class Meta:
+		model = File
+		fields = ('file',)
 
 class AssessmentForm(forms.ModelForm):
 
 	class Meta:
 		model = Assessment
-		fields = ('material', 'deadline', 'submissionDate',)
+		fields = ('deadline', 'submissionDate',)
 
 		
 class UserForm(forms.ModelForm):

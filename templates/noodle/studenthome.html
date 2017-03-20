@@ -15,7 +15,8 @@
 			Recently Viewed
 		</header>
 		<nav id="nav">
-		{% include "paginator.html" with items = recentPages base_url = {% url 'show_courses %} %}
+		{% url 'noodle:show_courses' as course_url %}
+		{% include "noodle/paginator.html" with items=recentPages base_url=course_url %}
 		</nav>
 	</div>
 	<br />
@@ -25,7 +26,8 @@
 			Assignments
 		</header>
 		<nav id="nav">
-		{% include "paginator.html" with items = assignmentPages base_url = {% url show_material %} %}
+		{% url 'noodle:show_material' as material_url %}
+		{% include "noodle/paginator.html" with items=assignmentPages base_url=material_url %}
 		</nav>
 	</div>
 {% endblock %}

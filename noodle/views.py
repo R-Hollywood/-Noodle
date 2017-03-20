@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django import shortcuts
 from noodle.models import *
 from noodle.forms import *
 from django.contrib.auth import authenticate, login, logout
@@ -8,13 +8,24 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime
 
+def render(request, page, context_dict):
+	
+	context_dict['tier'] = False
+	user = request.user
+	
+	if(hasattr(user, 'admin') and user.admin != None):
+		context_dict['tier'] = True
+	if(hasattr(user, 'staff') and user.staff != None):
+		context_dict['tier'] = True
+
+	return shortcuts.render(request, page, context_dict)
+
 def home(request):
 	
 	subject_list = Subject.objects
 	course_list = Course.objects
 	context_dict = {'subject': subject_list, 'course': course_list}
-	response = render(request, 'noodle/homepage_extends_base.html', context=context_dict)
-	return response
+	return render(request, 'noodle/homepage_extends_base.html', context_dict)
 
 @login_required
 def teachhome(request):
@@ -23,7 +34,7 @@ def teachhome(request):
 @login_required
 def studenthome(request):
 	context_dict = {}
-	return render(request,'noodle/teachhome.html', context_dict)		
+	return render(request,'noodle/studenthome.html', context_dict)		
 @login_required	
 def show_subject(request, subject_name_slug):
 	context_dict = {}
@@ -46,17 +57,31 @@ def show_assessment(request, assessment_name_slug):
 	return 'stub'
 
 @login_required	
-def add_assessment(request):
-	form = AssignmentForm()
+def add_material(request):
+	form = MaterialForm()
+	fileForm = FileForm()
+	assignmentForm = AssignmentForm()
+	
 	if request.method == 'POST':
-		form = AssessmentForm(request.POST)
-		if form.is_valid():
-			ass= form.save(commit=True)
+		form = MaterialForm(request.POST)
+		fileForm = FileForm(request.POST, request.FILES)
+		assignmentForm = AssignmentForm(request.POST)
+		
+		if form.is_valid() and fileForm.is_valid():
+			ass = form.save(commit=True)
+			fileForm.save(commit=True)
 			print(ass, ass.slug)
-			return index(request)
+			return teachhome(request)
+		elif form.is_valid() and assignmentForm.is_valid():
+			ass = form.save(commit=True)
+			assignmentForm.save(commit=True)
+			print(ass, ass.slug)
+			return teachhome(request)
 		else:
 			print(form.errors)
-	return render(request, 'noodle/add_assessment.html', {'form': form})
+			
+	context_dict = {'form': form, 'file_form': fileForm, 'assignment_form': assignmentForm}
+	return render(request, 'noodle/add_material.html', context_dict)
 	
 @login_required	
 def add_subject(request):
@@ -69,6 +94,7 @@ def add_subject(request):
 			return index(request)
 		else:
 			print(form.errors)
+	
 	return render(request, 'noodle/add_subject.html', {'form': form})
 
 @login_required
@@ -95,13 +121,12 @@ def add_course(request, subject_name_slug):
     return render(request, 'noodle/add_course.html', context_dict)
 
 def register(request):
-	return render(request,'noodle/register.html', {})
+	return render(request, 'noodle/register.html', {'registered':False})
 	
 def registerStaff(request):
-	registered = False
 	if request.method == 'POST':
 		user_form = UserForm(data=request.POST)
-		profile_form = UserProfileForm(data=request.POST)
+		profile_form = StaffUserProfileForm(data=request.POST)
 		if user_form.is_valid() and profile_form.is_valid():
 			user = user_form.save()
 			user.set_password(user.password)
@@ -111,7 +136,7 @@ def registerStaff(request):
 			if 'picture' in request.FILES:
 				profile.picture = request.FILES['picture']
 			profile.save()
-			registered = True
+			return render(request, 'noodle/register.html', {'registered':True})
 		else:
 			print(user_form.errors, profile_form.errors)
 	else:
@@ -119,14 +144,12 @@ def registerStaff(request):
 		profile_form = StaffUserProfileForm()
 	return render(request, 'noodle/registerStaff.html',
 		{'user_form': user_form,
-		'profile_form': profile_form,
-		'registered': registered})
+		'profile_form': profile_form})
 
 def registerStudent(request):
-	registered = False
 	if request.method == 'POST':
 		user_form = UserForm(data=request.POST)
-		profile_form = UserProfileForm(data=request.POST)
+		profile_form = StudentUserProfileForm(data=request.POST)
 		if user_form.is_valid() and profile_form.is_valid():
 			user = user_form.save()
 			user.set_password(user.password)
@@ -136,7 +159,7 @@ def registerStudent(request):
 			if 'picture' in request.FILES:
 				profile.picture = request.FILES['picture']
 			profile.save()
-			registered = True
+			return render(request, 'noodle/register.html', {'registered':True})
 		else:
 			print(user_form.errors, profile_form.errors)
 	else:
@@ -144,18 +167,17 @@ def registerStudent(request):
 		profile_form = StudentUserProfileForm()
 	return render(request, 'noodle/registerStudent.html',
 		{'user_form': user_form,
-		'profile_form': profile_form,
-		'registered': registered})		
+		'profile_form': profile_form})		
 		
 def user_login(request):
 	if request.method == 'POST':
-		username = request.POST.get('email')
+		username = request.POST.get('username')
 		password = request.POST.get('password')
 		user = authenticate(username=username, password=password)
 		if user:
 			if user.is_active:
 				login(request, user)
-				return HttpResponseRedirect(reverse('index'))
+				return HttpResponseRedirect(reverse('homepage'))
 			else:
 				return HttpResponse("Your Noodle account is disabled.")
 		else:
@@ -169,7 +191,7 @@ def user_logout(request):
 	# Since we know the user is logged in, we can now just log them out.
 	logout(request)
 	# Take the user back to the homepage.
-	return HttpResponseRedirect(reverse('home'))
+	return HttpResponseRedirect(reverse('homepage'))
 
 #a helper method to page objects
 #request should be passed from the calling view

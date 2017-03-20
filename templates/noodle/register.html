@@ -12,7 +12,7 @@
 		<h1>Registration</h1>
 		{% if registered %}
 			<h2>Thank you for Registering with Noodle.</h2>
-			<a href="{% url 'home' %}">Return to the homepage</a><br />
+			<a href="{% url 'homepage' %}">Return to the homepage</a><br />
 		{% else %}
 			<p><strong>Staff Register here!</strong><br />
 			<a href="{% url 'noodle:registerStaff' %}">Staff Registration</a></p>

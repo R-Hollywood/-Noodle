@@ -5,7 +5,8 @@
 	{% endblock %}
 
 	{% block body_block %}
-	<form id="StaffUserProfileForm" method-"post" action="{% url 'noodle:registerStaff' %}" enctype="multipart/form.data">
+	
+	<form id="StaffUserProfileForm" method="post" action="{% url 'noodle:registerStaff' %}" enctype="multipart/form-data">
 		{% csrf_token %}
 		
 		{{user_form.as_p}}

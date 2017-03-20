@@ -16,16 +16,34 @@
 					<input type="radio" id="a" name="file_type" value="File"> 
 					
 					{% if file_type="Assignment" %}
-						
-					{% else if file_type="File" %}
 						<form action="{% url "add_assignment" %}" method="post" enctype="multipart/form-data">
+							{% csrf_token %}
+							
+							{{ form.as_p }}
+							{{ assignment_form.as_p }}
+							
 							<p>{{ form.non_field_errors }}</p>
 							<p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
 							<p>
 							{{ form.docfile.errors }}
 							{{ form.docfile }}
 							</p>
-							<p><input type="submit" value="Upload" /></p>
+							<p><input type="submit" name="assignment" value="submit" /></p>
+						</form>
+					{% else if file_type="File" %}
+						<form action="{% url "add_assignment" %}" method="post" enctype="multipart/form-data">
+							{% csrf_token %}
+							
+							{{ form.as_p }}
+							{{ file_form.as_p }}
+							
+							<p>{{ form.non_field_errors }}</p>
+							<p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+							<p>
+							{{ form.docfile.errors }}
+							{{ form.docfile }}
+							</p>
+							<p><input type="submit" name="file" value="submit" /></p>
 						</form>
 					{% endif %}
 						

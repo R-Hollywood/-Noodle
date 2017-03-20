@@ -6,7 +6,7 @@
 	(for example the base url to show_courses before regex)
 	and for each item in items to have both a name and a slug-->
 
-{% page_block %}
+{% block page_block %}
 	{% for item in items %}
 	{% url 'show_category' category.slug %}
 		<a href="{% url base_url item.slug %}">{{ item.name }}></a>
