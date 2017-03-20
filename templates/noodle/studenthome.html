@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 {% extends 'noodle/base.html' %}
 {% load staticfiles %}
 
@@ -10,10 +12,10 @@
 	<br />
 	<div id="align-left">
 		<header id="header">
-			Recentley Viewed
+			Recently Viewed
 		</header>
 		<nav id="nav">
-		<!-- INSERT JAVASCRIPT HERE-->
+		{% include "paginator.html" with items = recentPages base_url = {% url 'show_courses %} %}
 		</nav>
 	</div>
 	<br />
@@ -23,7 +25,7 @@
 			Assignments
 		</header>
 		<nav id="nav">
-		<!-- INSERT JAVASCRIPT HERE-->
+		{% include "paginator.html" with items = assignmentPages base_url = {% url show_material %} %}
 		</nav>
 	</div>
 {% endblock %}

@@ -5,9 +5,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime
-
-
 
 def home(request):
 	
@@ -164,3 +163,22 @@ def user_logout(request):
 	logout(request)
 	# Take the user back to the homepage.
 	return HttpResponseRedirect(reverse('home'))
+
+#a helper method to page objects
+#request should be passed from the calling view
+#object_list is last of objects to page
+#perPage is the number of objects which should be put into one page
+#returns the current page, which should be passed into the context dict
+def pager(request, object_list, perPage):
+	paginator = Paginator(object_list, perPage)
+	
+	page = request.GET.get('page')
+	try:
+		currPage = paginator.page(page)
+	except PageNotAnInteger:
+		currPage = paginator.page(1)
+	except EmptyPage:
+		#returns last page
+		currPage = paginator.page(paginator.num_pages)
+	
+	return currPage

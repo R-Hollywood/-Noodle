@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<!--Note: This is not a standalone HTML file but a helper
+    to set out page structure-->
+<!--It requires a page (items), a 'base url' for each item
+	(for example the base url to show_courses before regex)
+	and for each item in items to have both a name and a slug-->
+
+{% page_block %}
+	{% for item in items %}
+	{% url 'show_category' category.slug %}
+		<a href="{% url base_url item.slug %}">{{ item.name }}></a>
+		</br>
+	{% endfor %}
+	
+	<div class ="pagination">
+		<span class="links">
+			{% if items.has_previous %}
+				<a href="?page={{ items.previous_page_number }}">Previous</a>
+			{% endif %}
+			
+			{% for pNo in items.page_range %}
+				{% if pNo == items.number %}
+					<b><a href="?page={{ pNo }}">pNo</a></b>
+				{% else %}
+					<a href="?page={{ pNo }}">pNo</a>
+				{% endif %}
+			{% endfor %}
+			
+			{% if items.has_next %}
+				<a href="?page={{ items.next_page_number }}">Next</a>
+			{% endif %}
+			
+			</br>
+	
+{% endblock %}
+
