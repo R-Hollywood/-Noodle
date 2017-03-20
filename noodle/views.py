@@ -36,6 +36,14 @@ def show_subject(request, subject_name_slug):
 		context_dict['subject'] = None
 		context_dict['course'] = None
 	return render(request, 'noodle/subject.html', context_dict)
+	
+@login_required	
+def show_course(request, course_name_slug):
+	return 'stub'
+	
+@login_required	
+def show_assessment(request, assessment_name_slug):
+	return 'stub'
 
 @login_required	
 def add_assessment(request):
@@ -87,8 +95,7 @@ def add_course(request, subject_name_slug):
     return render(request, 'noodle/add_course.html', context_dict)
 
 def register(request):
-	context_dict = {}
-	return render(request,'noodle/register.html', context_dict)
+	return render(request,'noodle/register.html', {})
 	
 def registerStaff(request):
 	registered = False

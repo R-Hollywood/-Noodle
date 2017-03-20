@@ -118,7 +118,6 @@ class File(models.Model):
 	#'inheritance'
 	material = models.OneToOneField(Material, unique = True)
 	
-	#should there be some other attribute here to hold the contents of a file?
 
 	def __str__(self): 
 		return self.name
