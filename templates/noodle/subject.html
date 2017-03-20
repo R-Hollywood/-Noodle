@@ -4,8 +4,26 @@
 {% load staticfiles %}
 
 	{% block title_block %}
+	<!-- unsure of actual django variable name? -->
+	{{ course_name}}
 	{% endblock %}
 
 	{% block body_block %}
+	<section id="main" class="wrapper">
+	<div id="sidebar">
+		<h2>Assignments</h2>
+	</div>
+	
+	<ul>
+		<!-- List of links to Assignments -->
+	</ul>
+	<div id="sidebar">
+		<h2>Files</h2>
+	</div>
+		<ul>
+		<!-- List of links to Files -->
+		</ul>
+	
+	</section>
 	{% endblock %}
 
