@@ -8,27 +8,31 @@
 
 	{% block body_block %}
 <section id="main" class="wrapper">
-	<div class="container">
 	
-	<div id="align-left">
-		<header id="header">
+		<div id="frame">
+			<!--- This area should contain the links to course pages. Arranged by Alphabetical Order-->
+		</div>
+		<div id="menu">
+		<div id="sidebar">
 			Options
-		</header>
-		<nav id="nav">
-		<!-- INSERT JAVASCRIPT HERE-->
-		</nav>
-	</div>
+		</div>
+		<ul>
+			<li><a href="{% url 'noodle:add_material'%}">Add File/Assignment</a></li>
+			<li><a href="{% url 'noodle:add_course' %}"> Add Course</a></li>
+		</ul>	
+		</div>
+	
 	<br />
 	<br />
-	<div id="align-left">
-		<header id="header">
+		<div id="menu">
+		<div id="sidebar">
 			Recently Added.
-		</header>
+		</div>
 		<nav id="nav">
-		<!-- INSERT JAVASCRIPT HERE-->
+		<!-- This area should display links to the 5 most recently added Files-->
 		</nav>
 	</div>
-	</div>
+	
 	</section>
 	{% endblock %}
 
