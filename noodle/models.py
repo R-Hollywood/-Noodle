@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 
 from django.db import models
 
+#as far as I can tell this functionality is encapsulated by File
+#please, whoever added this take a look at File
 class Document(models.Model):
     docfile = models.FileField(upload_to='documents/%Y/%m/%d')
     
@@ -67,6 +69,7 @@ class Course(models.Model):
 	#couMaintainedBy = models.ManyToManyField(Admin, related_name = 'couMaintenanceOf')
 	
 	def save(self, *args, **kwargs):
+		Material.objects.get_or_create(name = user)[0]
 		self.slug = slugify(self.name)
 		super(Course, self).save(*args, **kwargs)
 
@@ -117,7 +120,7 @@ class Material(models.Model):
 class File(models.Model):
 	#'inheritance'
 	material = models.OneToOneField(Material, unique = True)
-	file = models.FileField(blank = True)
+	file = models.FileField(upload_to='noodle/uploads/%Y/%m/%d', blank = True)
 
 	def __str__(self): 
 		return self.name
@@ -139,14 +142,31 @@ class Assessment(models.Model):
 	def __unicode__(self): 
 		return self.name
 
-
+class Announcement(models.Model):
+	
+	title = models.CharField(max_length = 128)
+	body = models.CharField(max_length = 1024)
+	slug = models.SlugField(unique=True)
+	date = models.DateTimeField()
+	
+	course = models.ForeignKey(blank = False, related_name="Announcement")
+	
+	def save(self, *args, **kwargs):
+		self.slug = slugify(title)
+		super(Material, self).save(*args, **kwargs)
+	
+	def __str__(self):
+		return self.course.name + ":" + self.title
+		
+	def __unicode__(self):
+		return self.course.name + ":" + self.title
+	
 class UserProfile(models.Model):
 		# Links UserProfile to a User model instance
 	user = models.ImageField(upload_to='profile_images', blank=True)
 
 	def __str__(self):
 		return self.user.username
-
 
 	def __unicode__(self):
 		return self.user.username

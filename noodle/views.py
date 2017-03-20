@@ -13,10 +13,11 @@ def render(request, page, context_dict):
 	context_dict['tier'] = False
 	user = request.user
 	
-	if(hasattr(user, 'admin') and user.admin != None):
-		context_dict['tier'] = True
-	if(hasattr(user, 'staff') and user.staff != None):
-		context_dict['tier'] = True
+	if(user.is_authenticated()):
+		if(hasattr(user, 'admin') and user.admin != None):
+			context_dict['tier'] = True
+		if(hasattr(user, 'staff') and user.staff != None):
+			context_dict['tier'] = True
 
 	return shortcuts.render(request, page, context_dict)
 
