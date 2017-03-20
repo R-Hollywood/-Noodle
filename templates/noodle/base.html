@@ -19,7 +19,7 @@
 	<div>	
 		
 			<header id="header">
-				<img src="{% static "images/logo.gif" %}" alt="Noodle Logo" /></a>
+				<img src="{% static "images/logo.gif" %}" alt="Noodle Logo" id="logo" href="{% url 'noodle:homepage' %}"  /></a>
 				<nav id="nav">
 					{% if user.is_authenticated %}
 						{% if tier %}
