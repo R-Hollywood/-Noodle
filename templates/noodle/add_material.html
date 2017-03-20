@@ -2,11 +2,17 @@
 	{% load staticfiles %}
 
 	{% block title_block %}
+
 	{% endblock %}
 	{% block body_block %}
 	
 			{% if course %}
-				<h1>Add an Assignment or File to {{course.name}}</h1>
+				<section id="main" class="wrapper">
+					<header class="major">
+						<h1>Add an Assignment or File to {{course.name}}</h1></h1>
+						<p />
+					</header>
+				
 				<form id="page_form" method="post" action="/teachhome/{{% course_name %}}/add">
 					{% csrf_token %}
 					Add:<br>
@@ -52,4 +58,5 @@
 			{% else %}
 				The specified course does not exist!
 			{% endif %}
+		</section>
 	 {% endblock %}

@@ -4,8 +4,23 @@
 {% load staticfiles %}
 
 	{% block title_block %}
+	<!-- unsure of actual django variable name? -->
+	{{assignment_name}}
 	{% endblock %}
 
 	{% block body_block %}
+	<section id="main" class="wrapper">
+	<header class="major">
+		<h1>{{assignment_name}} </h1>
+		<p />
+	</header>
+		<div id="frame">
+			<!--- This area should contain the information on the Assignments, Date Issued, Due Date and Current Submission Status along with the functionality to upload a submission-->
+		</div>
+		<button onclick="goBack()">Go Back</button>
+		<input type="submit" name="submit" value="Submit Assignment" />
+		<script src="{% static 'js/backButton.js' %}" /></script>
+	</section>
+	
 	{% endblock %}
 
