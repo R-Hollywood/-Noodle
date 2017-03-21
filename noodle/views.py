@@ -16,21 +16,22 @@ def render(request, page, context_dict):
 	if(user.is_authenticated()):
 		
 		homePage = (page == 'noodle/homepage_extends_base.html')
-		
-		if(homePage):
-			page = 'noodle/studenthome.html'
 			
-		if(hasattr(user, 'staff') and user.staff != None):
-			context_dict['tier'] = 1
-			if(homePage):
-				page = 'noodle/teachhome.html'
-				
 		#we can separate staff from admin
 		#but in practise, identification with 'is_superuser' is likely more practical
 		if(hasattr(user, 'admin') and user.admin != None):
 			context_dict['tier'] = 2
 			if(homePage):
-				page = 'noodle/teachhome.html'
+				return teachhome(request)
+			
+		if(hasattr(user, 'staff') and user.staff != None):
+			context_dict['tier'] = 1
+			if(homePage):
+				return teachhome(request)
+				
+		if(homePage):
+			return studenthome(request)
+				
 	return shortcuts.render(request, page, context_dict)
 	
 def listingCourse(request):
@@ -59,6 +60,8 @@ def home(request):
 @login_required
 def teachhome(request):
 	context_dict = {}
+	context_dict['recentFiles'] = (File.objects.all())[:5]
+	print context_dict['recentFiles']
 	return render(request,'noodle/teachhome.html', context_dict)
 	
 @login_required

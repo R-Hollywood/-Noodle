@@ -60,6 +60,9 @@ class Course(models.Model):
 	
 	staffManagers = models.ManyToManyField(Staff, related_name = 'courses')
 	
+	class Meta:
+		ordering = ['name']
+	
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
 		super(Course, self).save(*args, **kwargs)
@@ -69,6 +72,7 @@ class Course(models.Model):
 		
 	def __unicode__(self): 
 		return self.name
+		
 		
 class Student(models.Model):
 	#'inheritance'
@@ -125,6 +129,10 @@ class File(models.Model):
 	file = models.FileField(upload_to='noodle/uploads/%Y/%m/%d', blank = True)
 	#so paginator can access slug directly
 	slug = models.SlugField(unique=True)
+	datePosted = models.DateTimeField()
+	
+	class Meta:
+		ordering = ['-datePosted']
 	
 	def save(self, *args, **kwargs):
 		self.slug = self.material.slug

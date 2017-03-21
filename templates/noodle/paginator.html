@@ -22,6 +22,8 @@
 				<a href="?page={{ items.previous_page_number }}">Previous</a>
 			{% endif %}
 			
+			{{ items.page_range }}
+			
 			{% for pNo in items.page_range %}
 				{% if pNo == items.number %}
 					<b><a href="?page={{ pNo }}">pNo</a></b>

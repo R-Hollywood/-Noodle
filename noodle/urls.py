@@ -23,6 +23,9 @@ urlpatterns= [ url(r'^$',views.home, name='homepage'),
 	
 	url(r'^(?P<subject_name_slug>[\w\-]+)/(?P<course_name_slug>[\w\-]+)/announcements/$', 
         views.show_announcements, name='show_announcements'),
+		
+	url(r'^(?P<subject_name_slug>[\w\-]+)/(?P<course_name_slug>[\w\-]+)/announcements/(?P<announcement_name_slug>[\w\-]+)/$', 
+        views.show_announcements, name='show_announcement'),
 	
 	url(r'^(?P<subject_name_slug>[\w\-]+)/(?P<course_name_slug>[\w\-]+)/(?P<assessment_name_slug>[\w\-]+)/$', 
         views.show_assessment, name='show_assessment'),
