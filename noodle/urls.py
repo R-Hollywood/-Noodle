@@ -18,7 +18,7 @@ urlpatterns= [ url(r'^$',views.home, name='homepage'),
 	url(r'^(?P<subject_name_slug>[\w\-]+)/$', 
         views.show_subject, name='show_subject'),
 		
-	url(r'^(?P<course_name_slug>[\w\-]+)/(?P<subject_name_slug>[\w\-]+)/$', 
+	url(r'^(?P<subject_name_slug>[\w\-]+)/(?P<course_name_slug>[\w\-]+)/$', 
         views.show_course, name='show_course'),
 	
 	url(r'^(?P<subject_name_slug>[\w\-]+)/(?P<course_name_slug>[\w\-]+)/announcements/$', 

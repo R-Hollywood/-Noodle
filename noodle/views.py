@@ -85,18 +85,20 @@ def show_subject(request, subject_name_slug):
 	return render(request, 'noodle/subject.html', context_dict)
 	
 @login_required	
-def show_course(request, course_name_slug):
+def show_course(request, subject_name_slug, course_name_slug):
 	context_dict = {}
+	context_dict['course_name'] = None
 	#update user's visited courses somewhere
 	try:
 		course = Course.objects.get(slug=course_name_slug)
-		material = Material.objects.filter(courseForm=course)
+		material = Material.objects.filter(courseFrom=course)
 		context_dict['course'] = course
 		context_dict['material'] = material
-	except Subject.DoesNotExist:
+		context_dict['course_name'] = course.name
+	except Course.DoesNotExist:
 		context_dict['course'] = None
 		context_dict['material'] = None
-	return render(request, 'noodle/subject.html', context_dict)
+	return render(request, 'noodle/course.html', context_dict)
 	
 @login_required	
 def show_assessment(request, assessment_name_slug):
