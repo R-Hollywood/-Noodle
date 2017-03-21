@@ -4,8 +4,6 @@
 {% load staticfiles %}
 
 {% block title_block %}
-	<!-- unsure of actual django variable name? -->
-	{{ subject }}
 {% endblock %}
 
 {% block body_block %}
@@ -13,7 +11,7 @@
 	{% if subject %}
 	<section id="main" class="wrapper">
 	<header class="major">
-			<h1> {{ subject_name }} </h1>
+			<h1> {{ subject }} </h1>
 			<p />
 	</header>
 	<div id="menu1">

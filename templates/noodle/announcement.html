@@ -4,9 +4,18 @@
 {% load staticfiles %}
 
 {% block title_block %}
-	{{ announcement }}
 {% endblock %}
 
 {% block body_block %}
+	{% if announcement %}
+		<section id="main" class="wrapper">
+		<header class="major">
+			<h1> {{ course }} Announcements </h1>
+			<p />
+		</header>
+		
+		{% include 'noodle/paginator.html' with items=announcements %}
+		<!--Please order these in descending order of date-->
+	{% endif %}
 {% endblock %}
 
