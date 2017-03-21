@@ -29,7 +29,11 @@
 		{% endif %}
 	{% else %}
 		<p> The requested subject could not be found</p>
-		<!-- If user is admin offer them the option to add the subject -->
+		
+		{% if tier == 2 %}
+			<li><a href="{% url 'noodle:add_subject' %}"> Add Subject</a></li>
+		{% endif %}
+		
 	{% endif %}
 {% endblock %}
 

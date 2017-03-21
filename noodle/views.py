@@ -65,11 +65,8 @@ def home(request):
 @login_required
 def teachhome(request):
 	context_dict = {}
+	context_dict['courses'] = Course.objects.all()
 	context_dict['recentFiles'] = (File.objects.all())[:5]
-	for file in context_dict['recentFiles']:
-		course = file.material.courseFrom
-		subject = course.subject
-		context_dict[file.material.name] = reverse('noodle:show_assessment', args=[subject.slug, course.slug, file.slug])
 	print context_dict['recentFiles']
 	return render(request,'noodle/teachhome.html', context_dict)
 	
