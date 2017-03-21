@@ -15,43 +15,50 @@ from django.template.defaultfilters import slugify
 def populate():
 
 	admins = [
-		{'email': "yaah@email.com",
+		{'username':"president",
+		 'email': "yaah@email.com",
 		 'password': "Password0001",
 		 'fname': "Howard",
 		 'sname': "Dean"}]
 		 
 	staff = [
-		{'email': "habsburgSpain@email.com",
+		{'username':"kingOfSpain",
+		 'email': "habsburgSpain@email.com",
 		 'password': "Phillip420",
 		 'fname': "Charles II",
 		 'sname': "Habsburg",
 		 'subject': "History",
 		 'status': "Dead"},
-		{'email': "honnouji@email.com",
+		{'username':"shogun",
+		 'email': "honnouji@email.com",
 		 'password': "Press9ForRegicide",
 		 'fname': "Akechi",
 		 'sname': "Mitsuhide",
 		 'subject': "History",
 		 'status': "Dead"},
-		{'email': "constantinople@email.com",
+		{'username':"sultan",
+		 'email': "constantinople@email.com",
 		 'password': "WhyIsTheRumGone9001",
 		 'fname': "Mehmed II",
 		 'sname': "Osman",
 		 'subject': "History",
 		 'status': "Dead"},
-		{'email': "socialContract@email.com",
+		{'username':"contractor",
+		 'email': "socialContract@email.com",
 		 'password': "BrutishAndShort42",
 		 'fname': "Thomas",
 		 'sname': "Hobbes",
 		 'subject': "Philosophy",
 		 'status': "Dead"},
-		{'email': "utilitarianism@email.com",
+		{'username':"utility",
+		 'email': "utilitarianism@email.com",
 		 'password': "How2IncreaseUtility",
 		 'fname': "John",
 		 'sname': "Stuart Mill",
 		 'subject': "Philosophy",
 		 'status': "Dead"},
-		{'email': "realAnalysis@email.com",
+		{'username':"analysist",
+		 'email': "realAnalysis@email.com",
 		 'password': "letEpsilonBe0",
 		 'fname': "Karl",
 		 'sname': "Weierstrass",
@@ -59,25 +66,29 @@ def populate():
 		 'status': "Dead"}]
 		 
 	students = [
-		{'email': "FuncReqs@email.com",
+		{'username':"developer",
+		 'email': "FuncReqs@email.com",
 		 'password': "bracketScience4Lyfe",
 		 'fname': "Ross",
 		 'sname': "McBride",
 		 'subject': "History",
 		 'yearOfStudy': 2},
-		{'email': "ERDiagrams@email.com",
+		{'username':"viewer",
+		 'email': "ERDiagrams@email.com",
 		 'password': "climbMountain2SeeView",
 		 'fname': "Ivo",
 		 'sname': "Domingos",
 		 'subject': "Philosophy",
 		 'yearOfStudy': 2},
-		{'email': "Wireframes@email.com",
+		{'username':"designer",
+		 'email': "Wireframes@email.com",
 		 'password': "2stylishANDcascading",
 		 'fname': "Rachel-Anne",
 		 'sname': "Hollywood",
 		 'subject': "Philosophy",
 		 'yearOfStudy': 2},
-		{'email': "SiteMap@email.com",
+		{'username':"authenticator",
+		 'email': "SiteMap@email.com",
 		 'password': "100percentVerified",
 		 'fname': "Jack",
 		 'sname': "Conacher",
@@ -99,28 +110,30 @@ def populate():
 		 'subject': 'Mathematics'}]
 		 
 	files = [
-		{'name': 'CityOfWorldsDesire', 
-		 'visibility': True, 
-		 'course': 'History2'},
-		{'name': 'Leviathan',
-		 'visibility': False,
-		 'course': 'Philosophy2'}]
-	
-	assessments = [
-		{'name': 'CityOfWorldsDesire', 
+		{'name': 'Independence Day', 
 		 'visibility': True, 
 		 'course': 'History2',
-		 'deadline': datetime.datetime(1776,06,04),
-		 'submissionDate': datetime.datetime(2017,02,24)}]
+		 'datePosted': datetime.datetime(1776,06,04)},
+		{'name': 'Leviathan',
+		 'visibility': False,
+		 'course': 'Philosophy2',
+		 'datePosted': datetime.datetime(2017,02,24)}]
+	
+	assessments = [
+		{'name': 'Operation Barbarossa', 
+		 'visibility': True, 
+		 'course': 'History2',
+		 'deadline': datetime.datetime(1942,06,22),
+		 'submissionDate': datetime.datetime(1945,05,8)}]
 		 
 	for admin in admins:
-		add_admin(add_user(admin['email'], admin['password'], 
+		add_admin(add_user(admin['username'], admin['email'], admin['password'], 
 							admin['fname'], admin['sname']))
 			
 	#store this to populate later fields
 	staffMs = []
 	for staffM in staff:
-		staffMs.append(add_staff(add_user(staffM['email'], staffM['password'], 
+		staffMs.append(add_staff(add_user(staffM['username'], staffM['email'], staffM['password'], 
 											staffM['fname'], staffM['sname']),
 								 staffM['subject'], staffM['status']))
 			
@@ -154,7 +167,7 @@ def populate():
 					subjectMs[course['subject']], managers))
 					
 	for student in students:
-		add_student(add_user(student['email'], student['password'], 
+		add_student(add_user(student['username'], student['email'], student['password'], 
 							 student['fname'], student['sname']),
 					student['subject'], student['yearOfStudy'], courseL)
 					
@@ -171,7 +184,7 @@ def populate():
 		#here we just take the first staff member for any given subject
 		staffCreator = staffBySubject[subject][0]
 		add_file(add_material(file['name'], file['visibility'],
-					pCourse, staffCreator))
+					pCourse, staffCreator), file['datePosted'])
 	
 	for assessment in assessments:
 		subject = ''
@@ -188,13 +201,13 @@ def populate():
 									pCourse, staffCreator), assessment['deadline'], 
 									assessment['submissionDate'])
 						
-def add_user(email, password, fname, lname):
+def add_user(username, email, password, fname, lname):
 	
 	#necessary to do this rather than get_or_create because create_user hashes passwords
 	try:
 		return User.objects.get(username = email)
 	except User.DoesNotExist:
-		return User.objects.create_user(username = email,
+		return User.objects.create_user(username = username,
 					email = email, password = password,
 					first_name = fname, last_name = lname)
 
@@ -233,8 +246,11 @@ def add_material(name, visibility, course, staffCreator):
 	return Material.objects.get_or_create(name = name, visibility = visibility, 
 										courseFrom = course, createdBy = staffCreator)[0]
 	
-def add_file(material):
-	return File.objects.get_or_create(material = material)[0]
+def add_file(material, datePosted):
+	f = File.objects.get_or_create(material = material)[0]
+	f.datePosted = datePosted
+	f.save()
+	return f
 
 def add_assessment(material, deadline, submissionDate):
 	return Assessment.objects.get_or_create(material = material, deadline = deadline, submissionDate = submissionDate)[0]

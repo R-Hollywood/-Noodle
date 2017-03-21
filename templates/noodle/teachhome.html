@@ -34,11 +34,8 @@
 			Recently Added.
 		</div>
 		
-		potato
-		{{ recentFiles }}
-		
 		{% for file in recentFiles %}
-			<a href="{% url 'noodle:add_material' subject.slug course.slug file.slug %}">{{ file }}</a>
+			<a href="{% url 'noodle:show_assessment' file.material.courseFrom.subject.slug file.material.courseFrom.slug file.slug %}">{{ file }}</a>
 		{% endfor %}
 		<!-- This area should display links to the 5 most recently added Files-->
 		

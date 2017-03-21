@@ -13,7 +13,7 @@ class Admin(models.Model):
 	#name, password, email, forename and surname attributes are included with django's 'User' model
 	#in our case we should simply set the username to be the same as the email address
 	#because django has a lot involved in the underlying framework
-	user = models.OneToOneField(User, blank = False, related_name = 'admin')
+	user = models.OneToOneField(User, null = False, related_name = 'admin')
 	
 	def save(self, *args, **kwargs):
 		self.user.is_superuser = True
@@ -27,7 +27,7 @@ class Admin(models.Model):
 
 class Staff(models.Model):
 	#'inheritance'
-	user = models.OneToOneField(User, blank = False, related_name = 'staff')
+	user = models.OneToOneField(User, null = False, related_name = 'staff')
 	
 	subject = models.CharField(max_length = 128)
 	status = models.CharField(max_length = 128)
@@ -76,7 +76,7 @@ class Course(models.Model):
 		
 class Student(models.Model):
 	#'inheritance'
-	user = models.OneToOneField(User, blank = False, related_name = 'student')
+	user = models.OneToOneField(User, null = False, related_name = 'student')
 	
 	subject = models.CharField(max_length = 128)
 	yearOfStudy = models.IntegerField(default = 1)
@@ -111,7 +111,7 @@ class Material(models.Model):
 	slug = models.SlugField(unique=True)
 	
 	courseFrom = models.ForeignKey(Course, related_name = 'material')
-	createdBy = models.ForeignKey(Staff, related_name = 'createdMaterial', blank = False)
+	createdBy = models.ForeignKey(Staff, related_name = 'createdMaterial', null = False)
 
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
@@ -126,13 +126,13 @@ class Material(models.Model):
 class File(models.Model):
 	#'inheritance'
 	material = models.OneToOneField(Material, unique = True)
-	file = models.FileField(upload_to='noodle/uploads/%Y/%m/%d', blank = True)
+	file = models.FileField(upload_to='noodle/uploads/%Y/%m/%d', null = True)
 	#so paginator can access slug directly
 	slug = models.SlugField(unique=True)
-	datePosted = models.DateTimeField()
+	datePosted = models.DateTimeField(default=None, null=True)
 	
 	class Meta:
-		ordering = ['-datePosted']
+		ordering = ['datePosted']
 	
 	def save(self, *args, **kwargs):
 		self.slug = self.material.slug
@@ -147,7 +147,7 @@ class File(models.Model):
 class Assessment(models.Model):
 	#'inheritance'
 	material = models.OneToOneField(Material, unique = True)
-	submission = models.FileField(blank = True)
+	submission = models.FileField(null = True)
 	#so paginator can access slug directly
 	slug = models.SlugField(unique=True)
 
@@ -171,7 +171,7 @@ class Announcement(models.Model):
 	slug = models.SlugField(unique=True)
 	date = models.DateTimeField()
 	
-	course = models.ForeignKey(Course, blank = False, related_name="Announcement")
+	course = models.ForeignKey(Course, null = False, related_name="Announcement")
 	
 	def save(self, *args, **kwargs):
 		self.slug = slugify(title)

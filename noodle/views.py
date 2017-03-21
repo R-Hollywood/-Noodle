@@ -21,16 +21,9 @@ def render(request, page, context_dict):
 		#but in practise, identification with 'is_superuser' is likely more practical
 		if(hasattr(user, 'admin') and user.admin != None):
 			context_dict['tier'] = 2
-			if(homePage):
-				return teachhome(request)
 			
 		if(hasattr(user, 'staff') and user.staff != None):
 			context_dict['tier'] = 1
-			if(homePage):
-				return teachhome(request)
-				
-		if(homePage):
-			return studenthome(request)
 				
 	return shortcuts.render(request, page, context_dict)
 	
@@ -51,16 +44,32 @@ def listingCourse(request):
 	return render(request, 'list.html', {'course': course})	
 
 def home(request):
+
+	user = request.user
+	
+	if(user.is_authenticated()):
+		if(hasattr(user, 'admin') and user.admin != None):
+			return HttpResponseRedirect(reverse('noodle:teachhome'))
+	
+		if(hasattr(user, 'staff') and user.staff != None):
+			return HttpResponseRedirect(reverse('noodle:teachhome'))
+		
+		return HttpResponseRedirect(reverse('noodle:studenthome'))
 	
 	subject_list = Subject.objects
 	course_list = Course.objects
 	context_dict = {'subject': subject_list, 'course': course_list}
+	
 	return render(request, 'noodle/homepage_extends_base.html', context_dict)
 
 @login_required
 def teachhome(request):
 	context_dict = {}
 	context_dict['recentFiles'] = (File.objects.all())[:5]
+	for file in context_dict['recentFiles']:
+		course = file.material.courseFrom
+		subject = course.subject
+		context_dict[file.material.name] = reverse('noodle:show_assessment', args=[subject.slug, course.slug, file.slug])
 	print context_dict['recentFiles']
 	return render(request,'noodle/teachhome.html', context_dict)
 	
@@ -245,7 +254,7 @@ def user_logout(request):
 	# Since we know the user is logged in, we can now just log them out.
 	logout(request)
 	# Take the user back to the homepage.
-	return HttpResponseRedirect(reverse('homepage'))
+	return HttpResponseRedirect(reverse('noodle:homepage'))
 	
 def test_pagination(request):
 	currPage = pager(request, Staff.objects.all(), 3)

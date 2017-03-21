@@ -49,8 +49,17 @@ class UserForm(forms.ModelForm):
 		fields = ('username', 'email', 'password',)
 		
 	def clean(self):
+	
+		username = self.cleaned_data.get('username')
+		email = self.cleaned_data.get('email')
 		password = self.cleaned_data.get('password')
 		confirm_password = self.cleaned_data.get('confirm_password')
+		
+		if(User.objects.filter(username = username).exists()):
+			raise forms.ValidationError("Username is already in use.")
+			
+		if(User.objects.filter(email = email).exists()):
+			raise forms.ValidationError("Email is already in use.")
 		
 		if(password and password != confirm_password):
 			raise forms.ValidationError("Passwords don't match!")
