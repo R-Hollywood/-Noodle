@@ -35,6 +35,9 @@
 			{% include 'noodle/paginator.html' with items=files %}
 			</ul>
 		</div>
+		{% if tier %}
+		<li><a href="{% url 'noodle:add_material'%}">Add File/Assignment</a></li>
+		{% endif %}
 		{% else %}
 			<p> The requested course could not be found</p>
 			<!-- If user is admin/staff offer them the option to add the course -->

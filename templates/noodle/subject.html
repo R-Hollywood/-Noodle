@@ -9,20 +9,23 @@
 {% block body_block %}
 		
 	{% if subject %}
-	<section id="main" class="wrapper">
-	<header class="major">
+		<section id="main" class="wrapper">
+		<header class="major">
 			<h1> {{ subject }} </h1>
 			<p />
-	</header>
-	<div id="menu1">
-	<div id="sidebar1">
-		<h2>Courses</h2>
-	</div>
+		</header>
+		<div id="menu1">
+		<div id="sidebar1">
+			<h2>Courses</h2>
+		</div>
 	
-	<ul>
-		{% include 'noodle/paginator.html' with items=courses %}
-	</ul>
-	</div>
+		<ul>
+			{% include 'noodle/paginator.html' with items=courses %}
+		</ul>
+		</div>
+		{% if tier %}
+			<li><a href="{% url 'noodle:add_course' %}"> Add Course</a></li>
+		{% endif % }
 	{% else %}
 		<p> The requested subject could not be found</p>
 		<!-- If user is admin offer them the option to add the subject -->

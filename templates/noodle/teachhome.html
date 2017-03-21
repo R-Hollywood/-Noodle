@@ -18,9 +18,9 @@
 			Options
 		</div>
 		<ul>
-			<li><a href="{% url 'noodle:add_material'%}">Add File/Assignment</a></li>
-			<li><a href="{% url 'noodle:add_course' %}"> Add Course</a></li>
-			<li><!-- If user is an admin, a link to add_subject.html should appear here --></li>
+			{% if tier == 2 %}
+				<li><a href="{% url 'noodle:add_subject' %}"> Add Subject</a></li>
+			{% endif %}
 		</ul>	
 		</div>
 	<div id="frame">

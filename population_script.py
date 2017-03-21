@@ -15,7 +15,7 @@ from django.template.defaultfilters import slugify
 def populate():
 
 	admins = [
-		{'email': "yaaaaaaah@email.com",
+		{'email': "yaah@email.com",
 		 'password': "Password0001",
 		 'fname': "Howard",
 		 'sname': "Dean"}]
