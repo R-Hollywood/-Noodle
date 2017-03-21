@@ -25,6 +25,8 @@ def render(request, page, context_dict):
 			if(homePage):
 				page = 'noodle/teachhome.html'
 				
+		#we can separate staff from admin
+		#but in practise, identification with 'is_superuser' is likely more practical
 		if(hasattr(user, 'admin') and user.admin != None):
 			context_dict['tier'] = 2
 			if(homePage):
