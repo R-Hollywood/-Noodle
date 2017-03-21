@@ -56,26 +56,25 @@ def home(request):
 		
 		return HttpResponseRedirect(reverse('noodle:studenthome'))
 	
-	subject_list = Subject.objects
-	course_list = Course.objects
-	context_dict = {'subject': subject_list, 'course': course_list}
-	
 	return render(request, 'noodle/homepage_extends_base.html', context_dict)
 
 @login_required
 def teachhome(request):
 	context_dict = {}
-	context_dict['recentFiles'] = (File.objects.all())[:5]
-	for file in context_dict['recentFiles']:
+	files = File.objects.all()[:5]
+	context_dict['recentFiles'] = files
+	for file in files:
 		course = file.material.courseFrom
 		subject = course.subject
-		context_dict[file.material.name] = reverse('noodle:show_assessment', args=[subject.slug, course.slug, file.slug])
-	print context_dict['recentFiles']
+		context_dict[file.material.name] = reverse('noodle:show_assessment', args=[course.slug, file.slug])
 	return render(request,'noodle/teachhome.html', context_dict)
 	
 @login_required
 def studenthome(request):
-	context_dict = {}
+	subject_list = Subject.objects
+	course_list = Course.objects
+	context_dict = {'subject': subject_list, 'course': course_list}
+	
 	return render(request,'noodle/studenthome.html', context_dict)
 	
 @login_required	
@@ -91,7 +90,6 @@ def show_subject(request, subject_name_slug):
 	except Subject.DoesNotExist:
 		context_dict['subject'] = None
 		context_dict['course'] = None
-	print context_dict
 	return render(request, 'noodle/subject.html', context_dict)
 	
 @login_required	
@@ -112,12 +110,30 @@ def show_course(request, subject_name_slug, course_name_slug):
 	return render(request, 'noodle/course.html', context_dict)
 	
 @login_required	
-def show_announcements(request, subject_name_slug, course_name_slug):
-	return render(request, 'noodle/announcement.html', {})
+def show_announcements(request, course_name_slug, announcement_name_slug):
+	context_dict = {}
+	try:
+		courses = Course.objects.get(slug=course_name_slug)
+		announcement = Annoucement.objects.get(slug=announcement_name_slug)
+		context_dict['courses'] = courses
+		context_dict['announcement'] = announcement
+	except Course.DoesNotExist:
+		context_dict['announcement'] = None
+		context_dict['course'] = None
+	return render(request, 'noodle/announcement.html', context_dict)
 	
 @login_required	
-def show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug):
-	return 'stub'
+def show_assessment(request, course_name_slug, assessment_name_slug):
+	context_dict = {}
+	try:
+		courses = Course.objects.get(slug=course_name_slug)
+		assessment = Assessment.objects.get(slug=assessment_name_slug)
+		context_dict['courses'] = courses
+		context_dict['assessment'] = assessment
+	except Course.DoesNotExist:
+		context_dict['assessment'] = None
+		context_dict['course'] = None
+	return render(request, 'noodle/assessment.html', context_dict)
 
 @login_required	
 def add_material(request):
