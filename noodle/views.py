@@ -10,7 +10,7 @@ from datetime import datetime
 
 def render(request, page, context_dict):
 	
-	context_dict['tier'] = False
+	context_dict['tier'] = 0
 	user = request.user
 	
 	if(user.is_authenticated()):
@@ -21,12 +21,12 @@ def render(request, page, context_dict):
 			page = 'noodle/studenthome.html'
 		
 		if(hasattr(user, 'admin') and user.admin != None):
-			context_dict['tier'] = True
+			context_dict['tier'] = 2
 			if(homePage):
 				page = 'noodle/teachhome.html'
 			
 		if(hasattr(user, 'staff') and user.staff != None):
-			context_dict['tier'] = True
+			context_dict['tier'] = 1
 			if(homePage):
 				page = 'noodle/teachhome.html'
 
