@@ -19,14 +19,14 @@ def render(request, page, context_dict):
 		
 		if(homePage):
 			page = 'noodle/studenthome.html'
-		
-		if(hasattr(user, 'admin') and user.admin != None):
-			context_dict['tier'] = 2
-			if(homePage):
-				page = 'noodle/teachhome.html'
 			
 		if(hasattr(user, 'staff') and user.staff != None):
 			context_dict['tier'] = 1
+			if(homePage):
+				page = 'noodle/teachhome.html'
+				
+		if(hasattr(user, 'admin') and user.admin != None):
+			context_dict['tier'] = 2
 			if(homePage):
 				page = 'noodle/teachhome.html'
 
