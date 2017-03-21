@@ -32,10 +32,6 @@ class Staff(models.Model):
 	subject = models.CharField(max_length = 128)
 	status = models.CharField(max_length = 128)
 	
-	#is this field actually necessary?
-	#I don't think so, but I included it for the time being
-	#staMaintainedBy = models.ManyToManyField(Admin, related_name = 'staMaintenanceOf')
-
 	def __str__(self): 
 		return self.user.username
 		
@@ -59,17 +55,12 @@ class Subject(models.Model):
 class Course(models.Model):
 
 	name = models.CharField(max_length = 128)
-	#I'm assuming we're going to need different urls for each course page here
 	slug = models.SlugField(unique=True)
-	#I'm treating this as another object for ease of implementation
-	#but as in the ER diagram it's practically just an attribute
 	subject = models.ForeignKey(Subject)
 	
 	staffManagers = models.ManyToManyField(Staff, related_name = 'courses')
-	#couMaintainedBy = models.ManyToManyField(Admin, related_name = 'couMaintenanceOf')
 	
 	def save(self, *args, **kwargs):
-		Material.objects.get_or_create(name = user)[0]
 		self.slug = slugify(self.name)
 		super(Course, self).save(*args, **kwargs)
 
@@ -86,24 +77,29 @@ class Student(models.Model):
 	subject = models.CharField(max_length = 128)
 	yearOfStudy = models.IntegerField(default = 1)
 	
-	enrolledIn = models.ManyToManyField(Course, related_name = 'students')
-	#stuMaintainedBy = models.ManyToManyField(Admin, related_name = 'stuMaintenanceOf')
+	visitedCourse = models.ManyToManyField(Course, through = 'VisitedCourse')
+	enrolledIn = models.ManyToManyField(Course, related_name = 'enrolledStudents')
 	
 	def __str__(self): 
 		return self.user.username
 		
 	def __unicode__(self): 
 		return self.user.username
+		
+#used to track course page visits from students
+#basically allows a 'date' field in the the join table
+class VisitedCourse(models.Model):
+	date = models.DateTimeField()
+	
+	student = models.ForeignKey(Student, related_name='courseVisit')
+	course = models.ForeignKey(Course, related_name='courseVisit')
 
 class Material(models.Model):
 
 	name = models.CharField(max_length = 128)
 	visibility = models.BooleanField()
-	#I'm assuming we're going to need different urls for each piece of material here
 	slug = models.SlugField(unique=True)
 	
-	#actually, I think this is an implicit relationship from the student accessing the course
-	#accessedBy = models.ManyToManyField(Student, related_name = 'hasAccess')
 	courseFrom = models.ForeignKey(Course, related_name = 'material')
 	createdBy = models.ForeignKey(Staff, related_name = 'createdMaterial', blank = False)
 
@@ -121,6 +117,12 @@ class File(models.Model):
 	#'inheritance'
 	material = models.OneToOneField(Material, unique = True)
 	file = models.FileField(upload_to='noodle/uploads/%Y/%m/%d', blank = True)
+	#so paginator can access slug directly
+	slug = models.SlugField(unique=True)
+	
+	def save(self, *args, **kwargs):
+		self.slug = material.slug
+		super(File, self).save(*args, **kwargs)
 
 	def __str__(self): 
 		return self.name
@@ -132,16 +134,22 @@ class Assessment(models.Model):
 	#'inheritance'
 	material = models.OneToOneField(Material, unique = True)
 	submission = models.FileField(blank = True)
-	
+	#so paginator can access slug directly
+	slug = models.SlugField(unique=True)
+
 	deadline = models.DateTimeField()
 	submissionDate = models.DateTimeField()
+	
+	def save(self, *args, **kwargs):
+		self.slug = material.slug
+		super(Assessment, self).save(*args, **kwargs)
 
 	def __str__(self): 
 		return self.name
 		
 	def __unicode__(self): 
 		return self.name
-
+		
 class Announcement(models.Model):
 	
 	title = models.CharField(max_length = 128)
@@ -149,7 +157,7 @@ class Announcement(models.Model):
 	slug = models.SlugField(unique=True)
 	date = models.DateTimeField()
 	
-	course = models.ForeignKey(blank = False, related_name="Announcement")
+	course = models.ForeignKey(Course, blank = False, related_name="Announcement")
 	
 	def save(self, *args, **kwargs):
 		self.slug = slugify(title)
@@ -161,8 +169,9 @@ class Announcement(models.Model):
 	def __unicode__(self):
 		return self.course.name + ":" + self.title
 	
+#do we need this?
 class UserProfile(models.Model):
-		# Links UserProfile to a User model instance
+	# Links UserProfile to a User model instance
 	user = models.ImageField(upload_to='profile_images', blank=True)
 
 	def __str__(self):

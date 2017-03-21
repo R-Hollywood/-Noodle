@@ -8,8 +8,11 @@
 
 {% block page_block %}
 	{% for item in items %}
-	{% url 'show_category' category.slug %}
-		<a href="{% url base_url item.slug %}">{{ item.name }}></a>
+		{% if base_url %}
+			<a href="{{base_url}}{{item.slug}}/">{{ item.name }}</a>
+		{% else %}
+			<a href="{{request.get_full_path}}{{item.slug}}/">{{ item.name }}</a>	
+		{% endif %}
 		</br>
 	{% endfor %}
 	

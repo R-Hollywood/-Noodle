@@ -14,10 +14,21 @@ def render(request, page, context_dict):
 	user = request.user
 	
 	if(user.is_authenticated()):
+		
+		homePage = (page == 'noodle/homepage_extends_base.html')
+		
+		if(homePage):
+			page = 'noodle/studenthome.html'
+		
 		if(hasattr(user, 'admin') and user.admin != None):
 			context_dict['tier'] = True
+			if(homePage):
+				page = 'noodle/teachhome.html'
+			
 		if(hasattr(user, 'staff') and user.staff != None):
 			context_dict['tier'] = True
+			if(homePage):
+				page = 'noodle/teachhome.html'
 
 	return shortcuts.render(request, page, context_dict)
 
@@ -32,29 +43,50 @@ def home(request):
 def teachhome(request):
 	context_dict = {}
 	return render(request,'noodle/teachhome.html', context_dict)
+	
 @login_required
 def studenthome(request):
 	context_dict = {}
-	return render(request,'noodle/studenthome.html', context_dict)		
+	return render(request,'noodle/studenthome.html', context_dict)
+	
 @login_required	
 def show_subject(request, subject_name_slug):
+	print subject_name_slug
 	context_dict = {}
+	context_dict['subject_name'] = None
 	try:
-		subject = Subjects.objects.get(slug=subject_name_slug)
+		subject = Subject.objects.get(slug=subject_name_slug)
 		courses = Course.objects.filter(subject=subject)
+		courses = pager(request, courses, 10)
 		context_dict['courses'] = courses
 		context_dict['subject'] = subject
+		context_dict['subject_name'] = subject.name
 	except Subject.DoesNotExist:
 		context_dict['subject'] = None
 		context_dict['course'] = None
+	print context_dict
 	return render(request, 'noodle/subject.html', context_dict)
 	
 @login_required	
 def show_course(request, course_name_slug):
-	return 'stub'
+	context_dict = {}
+	#update user's visited courses somewhere
+	try:
+		course = Course.objects.get(slug=course_name_slug)
+		material = Material.objects.filter(courseForm=course)
+		context_dict['course'] = course
+		context_dict['material'] = material
+	except Subject.DoesNotExist:
+		context_dict['course'] = None
+		context_dict['material'] = None
+	return render(request, 'noodle/subject.html', context_dict)
 	
 @login_required	
 def show_assessment(request, assessment_name_slug):
+	return 'stub'
+	
+@login_required	
+def show_announcements(request, course_name_slug):
 	return 'stub'
 
 @login_required	
@@ -193,6 +225,10 @@ def user_logout(request):
 	logout(request)
 	# Take the user back to the homepage.
 	return HttpResponseRedirect(reverse('homepage'))
+	
+def test_pagination(request):
+	currPage = pager(request, Staff.objects.all(), 3)
+	return render(request, 'noodle/pageTest.html', {'currPage':currPage})
 
 #a helper method to page objects
 #request should be passed from the calling view

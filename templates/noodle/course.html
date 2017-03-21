@@ -4,8 +4,42 @@
 {% load staticfiles %}
 
 	{% block title_block %}
+		{{ course }}
 	{% endblock %}
 
-	{% block body_block %}
-	{% endblock %}
+{% block body_block %}
+			
+	<a href='page_url'+'announcements/'>Announcements</a>
+			
+	</br>
+	
+	{% if course %}
+		<section id="main" class="wrapper">
+		<header class="major">
+			<h1> {{ subject_name}} </h1>
+			<p />
+		</header>
+		<div id="menu1">
+		<div id="sidebar1">
+			<h2>Assignments</h2>
+		</div>
+	
+		<ul>
+			{% include 'noodle/paginator.html' with items=assignments%}
+		</ul>
+		</div>
+		<div id="menu2">
+		<div id="sidebar2">
+			<h2>Files</h2>
+		</div>
+			<ul>
+			{% include 'noodle/paginator.html' with items=files %}
+			</ul>
+		</div>
+		{% else %}
+			<p> The requested course could not be found</p>
+			<!-- If user is admin/staff offer them the option to add the course -->
+		{% endif %}
+	</section>
+{% endblock %}
 
