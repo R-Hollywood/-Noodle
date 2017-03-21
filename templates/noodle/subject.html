@@ -23,13 +23,13 @@
 			{% include 'noodle/paginator.html' with items=courses %}
 		</ul>
 		</div>
+		</section>
 		{% if tier %}
-			<li><a href="{% url 'noodle:add_course' %}"> Add Course</a></li>
-		{% endif % }
+			<a href="{% url 'noodle:add_course' subject.slug %}"> Add Course</a>
+		{% endif %}
 	{% else %}
 		<p> The requested subject could not be found</p>
 		<!-- If user is admin offer them the option to add the subject -->
 	{% endif %}
-	</section>
 {% endblock %}
 

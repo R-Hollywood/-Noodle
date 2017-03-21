@@ -9,9 +9,9 @@
 {% block page_block %}
 	{% for item in items %}
 		{% if base_url %}
-			<a href="{{base_url}}{{item.slug}}/">{{ item.name }}</a>
+			<li><a href="{{base_url}}{{item.slug}}/">{{ item.name }}</a></li>
 		{% else %}
-			<a href="{{request.get_full_path}}{{item.slug}}/">{{ item.name }}</a>	
+			<li><a href="{{request.get_full_path}}{{item.slug}}/">{{ item.name }}</a></li>
 		{% endif %}
 		</br>
 	{% endfor %}

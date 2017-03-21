@@ -88,10 +88,13 @@ def show_course(request, subject_name_slug, course_name_slug):
 	#update user's visited courses somewhere
 	try:
 		course = Course.objects.get(slug=course_name_slug)
+		subject = course.subject
 		material = Material.objects.filter(courseFrom=course)
+		context_dict['subject'] = subject
 		context_dict['course'] = course
 		context_dict['material'] = material
 	except Course.DoesNotExist:
+		context_dict['subject'] = None
 		context_dict['course'] = None
 		context_dict['material'] = None
 	return render(request, 'noodle/course.html', context_dict)
