@@ -6,8 +6,8 @@ from django.db import models
 
 #as far as I can tell this functionality is encapsulated by File
 #please, whoever added this take a look at File
-class Document(models.Model):
-    docfile = models.FileField(upload_to='documents/%Y/%m/%d')
+#class Document(models.Model):
+    #docfile = models.FileField(upload_to='documents/%Y/%m/%d')
     
 class Admin(models.Model):
 	#name, password, email, forename and surname attributes are included with django's 'User' model
@@ -65,7 +65,7 @@ class Course(models.Model):
 		super(Course, self).save(*args, **kwargs)
 
 	def __str__(self): 
-		return self.name + "," + self.slug
+		return self.name
 		
 	def __unicode__(self): 
 		return self.name
@@ -93,6 +93,12 @@ class VisitedCourse(models.Model):
 	
 	student = models.ForeignKey(Student, related_name='courseVisit')
 	course = models.ForeignKey(Course, related_name='courseVisit')
+	
+	def __str__(self): 
+		return self.student.name + "/" + self.course.name + "/" + date
+		
+	def __unicode__(self): 
+		return self.student.name + "/" + self.course.name + "/" + date
 
 class Material(models.Model):
 
@@ -125,10 +131,10 @@ class File(models.Model):
 		super(File, self).save(*args, **kwargs)
 
 	def __str__(self): 
-		return self.name
+		return self.material.name
 		
 	def __unicode__(self): 
-		return self.name
+		return self.material.name
 
 class Assessment(models.Model):
 	#'inheritance'
@@ -145,10 +151,10 @@ class Assessment(models.Model):
 		super(Assessment, self).save(*args, **kwargs)
 
 	def __str__(self): 
-		return self.name
+		return self.material.name
 		
 	def __unicode__(self): 
-		return self.name
+		return self.material.name
 		
 class Announcement(models.Model):
 	

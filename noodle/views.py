@@ -70,14 +70,12 @@ def studenthome(request):
 def show_subject(request, subject_name_slug):
 	print subject_name_slug
 	context_dict = {}
-	context_dict['subject_name'] = None
 	try:
 		subject = Subject.objects.get(slug=subject_name_slug)
 		courses = Course.objects.filter(subject=subject)
 		courses = pager(request, courses, 10)
 		context_dict['courses'] = courses
 		context_dict['subject'] = subject
-		context_dict['subject_name'] = subject.name
 	except Subject.DoesNotExist:
 		context_dict['subject'] = None
 		context_dict['course'] = None
@@ -87,25 +85,23 @@ def show_subject(request, subject_name_slug):
 @login_required	
 def show_course(request, subject_name_slug, course_name_slug):
 	context_dict = {}
-	context_dict['course_name'] = None
 	#update user's visited courses somewhere
 	try:
 		course = Course.objects.get(slug=course_name_slug)
 		material = Material.objects.filter(courseFrom=course)
 		context_dict['course'] = course
 		context_dict['material'] = material
-		context_dict['course_name'] = course.name
 	except Course.DoesNotExist:
 		context_dict['course'] = None
 		context_dict['material'] = None
 	return render(request, 'noodle/course.html', context_dict)
 	
 @login_required	
-def show_assessment(request, assessment_name_slug):
-	return 'stub'
+def show_announcements(request, subject_name_slug, course_name_slug):
+	return render(request, 'noodle/announcement.html', {})
 	
 @login_required	
-def show_announcements(request, course_name_slug):
+def show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug):
 	return 'stub'
 
 @login_required	
