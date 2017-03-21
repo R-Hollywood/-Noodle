@@ -31,8 +31,6 @@ def render(request, page, context_dict):
 			context_dict['tier'] = 2
 			if(homePage):
 				page = 'noodle/teachhome.html'
-	if(!user.is_authenticated()):
-		page == 'noodle/homepage_extends_base.html'
 	return shortcuts.render(request, page, context_dict)
 	
 def listingCourse(request):

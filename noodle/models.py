@@ -121,7 +121,7 @@ class File(models.Model):
 	slug = models.SlugField(unique=True)
 	
 	def save(self, *args, **kwargs):
-		self.slug = material.slug
+		self.slug = self.material.slug
 		super(File, self).save(*args, **kwargs)
 
 	def __str__(self): 
@@ -141,7 +141,7 @@ class Assessment(models.Model):
 	submissionDate = models.DateTimeField()
 	
 	def save(self, *args, **kwargs):
-		self.slug = material.slug
+		self.slug = self.material.slug
 		super(Assessment, self).save(*args, **kwargs)
 
 	def __str__(self): 
