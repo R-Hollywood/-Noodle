@@ -4,8 +4,36 @@
 {% load staticfiles %}
 
 	{% block title_block %}
+	<!-- unsure of actual django variable name? -->
+	{{ course_name}}
 	{% endblock %}
 
 	{% block body_block %}
-	{% endblock %}
-
+	{% if subject %}
+	<section id="main" class="wrapper">
+	<header class="major">
+			<h1> {{ course_name}} </h1>
+			<p />
+	</header>
+	<div id="menu2">
+	<div id="sidebar2">
+		<h2>Assignments</h2>
+	</div>
+	
+	<ul>
+		<!-- List of links to Assignments -->
+	</ul>
+	</div>
+	<div id="menu2">
+	<div id="sidebar2">
+		<h2>Files</h2>
+	</div>
+		<ul>
+		<!-- List of links to Files -->
+		</ul>
+	</div>
+	{% else %}
+		<p> The course {{course}} is not an existing subject</p>
+		<!-- If user is admin/teacher offer them the option to add the subject -->
+		
+	</section>

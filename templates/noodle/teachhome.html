@@ -25,6 +25,12 @@
 		</div>
 	<div id="frame">
 			<!--- This area should contain the links to course pages. Arranged by Alphabetical Order-->
+			{% for subject in subjects %}
+                 	<li><a href="{% url 'noodle:subject' subject.slug %}">{{ subject.name }}</a></li>
+					{% for course in subject %}
+						<li><a href="{% url 'noodle:course' course.slug %}">{{ course.name }}</a></li>
+					{% endfor %}
+            {% endfor %}
 			
 	</div>
 	<br />
