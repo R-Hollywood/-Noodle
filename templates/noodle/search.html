@@ -3,8 +3,12 @@
 		{% block title %} Search {% endblock %}
 		{% block body_block %}
 		<div>
+		<section id="main" class="wrapper">
+	
+		<header class="major">
 			<h1>Search with Noodle</h1>
-			<br/>
+			<p />
+		</header>
 			<form class="form-inline" id="user_form" 
 				method="post" action="{% url 'search' %}">
 			{% csrf_token %}
@@ -17,7 +21,10 @@
 			</form>	
 			<div>
 			{% if result_list %}
+			<div id=menu2>
+			<div id=sidebar2>
 			<h3>Results</h3>
+			</div>
 			<!-- Display search results in an ordered list -->
 				<div class="list-group">
 				{% for result in result_list %}
@@ -29,7 +36,9 @@
 					</div>
 				{% endfor %}
 				</div>
+			</div>
 			{% endif %}
 			</div>
 		</div>	
+		</section>
 		{% endblock %}
