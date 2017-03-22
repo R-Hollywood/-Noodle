@@ -19,5 +19,7 @@
 	{% else %}
 		The announcements page could not be found!
 	{% endif %}
+	</br>
+	<a href="{% url 'noodle:show_course' course.subject.slug course.slug %}">Back to Course Announcements</a>
 {% endblock %}
 

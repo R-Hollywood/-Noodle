@@ -24,8 +24,11 @@
 		</ul>	
 		</div>
 	<div id="frame">
-			{% include 'noodle/paginator.html' with items=courses find_course=True %}
-			<!-- This area should contain the links to course pages. Arranged by Alphabetical Order-->	
+		Subjects
+		{% include 'noodle/paginator.html' with items=subjects find_subject=True %}
+		</br>
+		Courses
+		{% include 'noodle/paginator.html' with items=courses find_course=True %}
 	</div>
 	<br />
 	<br />

@@ -42,6 +42,9 @@ class Subject(models.Model):
 	name = models.CharField(max_length = 128)
 	slug = models.SlugField(unique=True)
 	
+	class Meta:
+		ordering = ['name']
+	
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
 		super(Subject, self).save(*args, **kwargs)

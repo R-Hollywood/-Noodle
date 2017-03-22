@@ -7,5 +7,18 @@
 {% endblock %}
 
 {% block body_block %}
+	{% if announcement %}
+		<section id="main" class="wrapper">
+		<header class="major">
+			<h1> {{ announcement.name }} </h1>
+			<p />
+		</header>
+	{{ announcement.body }}
+	{% else %}
+		Announcement could not be found!
+	{% endif %}
+	</br>
+	</br>
+	<a href="{% url 'noodle:show_announcements' course.subject.slug course.slug %}">Back to Course Announcements</a>
 {% endblock %}
 

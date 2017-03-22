@@ -45,7 +45,8 @@ def home(request):
 @login_required
 def teachhome(request):
 	context_dict = {}
-	context_dict['courses'] = Course.objects.all()
+	context_dict['subjects'] = pager(request, Subject.objects.all(), 10)
+	context_dict['courses'] = pager(request, Course.objects.all(), 10)
 	context_dict['recentFiles'] = (File.objects.all())[:5]
 	print context_dict['recentFiles']
 	return render(request,'noodle/teachhome.html', context_dict)
@@ -53,6 +54,8 @@ def teachhome(request):
 @login_required
 def studenthome(request):
 	context_dict = {}
+	context_dict['subjects'] = pager(request, Subject.objects.all(), 10)
+	context_dict['courses'] = pager(request, Course.objects.all(), 10)
 	recentCourses = VisitedCourse.objects.all()[:5]
 	context_dict['recentCourses'] = []
 	for recentCourse in recentCourses:
@@ -116,9 +119,9 @@ def show_announcements(request, subject_name_slug, course_name_slug):
 def show_announcement(request, subject_name_slug, course_name_slug, announcement_name_slug):
 	context_dict = {}
 	try:
-		courses = Course.objects.get(slug=course_name_slug)
+		course = Course.objects.filter(slug=course_name_slug)[0]
 		announcement = Announcement.objects.get(slug=announcement_name_slug)
-		context_dict['courses'] = courses
+		context_dict['course'] = course
 		context_dict['announcement'] = announcement
 	except Course.DoesNotExist:
 		context_dict['announcement'] = None
