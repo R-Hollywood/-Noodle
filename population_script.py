@@ -9,7 +9,7 @@ django.setup()
 import datetime
 
 from django.contrib.auth.models import User
-from noodle.models import Admin, Staff, Student, Course, Subject, Material, File, Assessment
+from noodle.models import Admin, Staff, Student, Course, Subject, VisitedCourse, Material, File, Assessment, Announcement
 from django.template.defaultfilters import slugify
 
 def populate():
@@ -110,7 +110,9 @@ def populate():
 		 'subject': 'Mathematics'}]
 		 
 	visited_courses = [
-	]
+	{'date': datetime.datetime(1610,07,04)
+	 'student': 'developer'
+	 'course': 'History2'}]
 		 
 	files = [
 		{'name': 'Independence Day', 
@@ -188,6 +190,11 @@ def populate():
 							 student['fname'], student['sname']),
 					student['subject'], student['yearOfStudy'], courseL)
 					
+	for visited_course in visited_courses:
+		student = Student.objects.filter(user.username=visited_course['student'])
+		course = Student.objects.filter(user.username=visited_course['course'])
+		add_visitedcourse(visited_course['date'], student, course)
+					
 	for file in files:
 		subject = ''
 		for course in courses:
@@ -220,6 +227,7 @@ def populate():
 									
 	for announcement in announcements:
 		#convert string to course
+		course = Course.objects.filter(name=announcement['name'])[0]
 		add_announcement(course, announcement['title'], announcement['body'], announcement['date'])
 						
 def add_user(username, email, password, fname, lname):
