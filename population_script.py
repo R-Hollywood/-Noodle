@@ -110,8 +110,8 @@ def populate():
 		 'subject': 'Mathematics'}]
 		 
 	visited_courses = [
-	{'date': datetime.datetime(1610,07,04)
-	 'student': 'developer'
+	{'date': datetime.datetime(1610,07,04),
+	 'student': 'developer',
 	 'course': 'History2'}]
 		 
 	files = [
@@ -132,109 +132,75 @@ def populate():
 		 'submissionDate': datetime.datetime(1945,05,8)}]
 		 
 	announcements = [
-		{'title': "History2 Created!"
-		 'body': "Nice-Memel!"
-		 'date': datetime.datetime(1914, 06, 28)
-		 'course': History2},
-		 {'title': "Philosophy2 Created!"
-		 'body': "This sentence is a lie."
-		 'date': datetime.datetime(1648, 10, 24)
-		 'course': Philosophy2},
-		 {'title': "Mathematics2 Created!"
-		 'body': "History2 is here!"
-		 'date': datetime.datetime(1918, 11, 11)
-		 'course': Mathematics2},]
+		{'title': "History2 Created!",
+		 'body': "Nice-Memel!",
+		 'date': datetime.datetime(1914, 06, 28),
+		 'course': 'History2'},
+		 {'title': "Philosophy2 Created!",
+		 'body': "This sentence is a lie.",
+		 'date': datetime.datetime(1648, 10, 24),
+		 'course': 'Philosophy2'},
+		 {'title': "Mathematics2 Created!",
+		 'body': "History2 is here!",
+		 'date': datetime.datetime(1918, 11, 11),
+		 'course': 'Mathematics2'}]
 		 
 	for admin in admins:
 		add_admin(add_user(admin['username'], admin['email'], admin['password'], 
 							admin['fname'], admin['sname']))
 			
-	#store this to populate later fields
-	staffMs = []
 	for staffM in staff:
-		staffMs.append(add_staff(add_user(staffM['username'], staffM['email'], staffM['password'], 
-											staffM['fname'], staffM['sname']),
-								 staffM['subject'], staffM['status']))
-			
-	subjectMs = {}
-	#staff reorganised for convenience
-	staffBySubject = {}
-	coursesBySubject = {}
+		add_staff(add_user(staffM['username'], staffM['email'], staffM['password'], 
+							staffM['fname'], staffM['sname']),
+					staffM['subject'], staffM['status'])
 
 	for subject in subjects:
-		subjectMs[subject] = add_subject(subject)
-		
-		staffBySubject[subject] = []
-		coursesBySubject[subject] = []
-		
-		for staffM in staffMs:
-			if(staffM.subject == subject):
-				staffBySubject[subject].append(staffM)
+		add_subject(subject)
 				
-		for course in courses:
-			if(course['subject'] == subject):
-				coursesBySubject[subject].append(course)
-				
-	courseL = []
 	for course in courses:
 	
-		managers = []
+		subject = Subject.objects.filter(name=course['subject'])[0]
 		#here we assume all staff members belonging to a course are managers
-		for staffM in staffBySubject[course['subject']]:
-			managers.append(staffM)
-		courseL.append(add_course(course['name'], course['courseID'],
-					subjectMs[course['subject']], managers))
+		managers = Staff.objects.filter(subject=course['subject'])
+		add_course(course['name'], course['courseID'],
+					subject, managers)
 					
 	for student in students:
 		add_student(add_user(student['username'], student['email'], student['password'], 
 							 student['fname'], student['sname']),
-					student['subject'], student['yearOfStudy'], courseL)
+					student['subject'], student['yearOfStudy'], 
+					Course.objects.filter(subject=Subject.objects.filter(name=student['subject'])))
 					
 	for visited_course in visited_courses:
-		student = Student.objects.filter(user.username=visited_course['student'])
-		course = Student.objects.filter(user.username=visited_course['course'])
+		student = Student.objects.filter(user = User.objects.filter(username=visited_course['student']))[0]
+		course = Course.objects.filter(name=visited_course['course'])[0]
 		add_visitedcourse(visited_course['date'], student, course)
 					
 	for file in files:
-		subject = ''
-		for course in courses:
-			if(course['name'] == file['course']):
-				subject = course['subject']
-				break
-		for course in courseL:
-			if(course.name == file['course']):
-				pCourse = course
-				break
+		course = (Material.objects.filter(name=file['name'])[0]).courseFrom
+		subject = course.subject
 		#here we just take the first staff member for any given subject
-		staffCreator = staffBySubject[subject][0]
+		staffCreator = Staff.objects.filter(subject=subject)[0]
 		add_file(add_material(file['name'], file['visibility'],
-					pCourse, staffCreator), file['datePosted'])
+					course, staffCreator), file['datePosted'])
 	
 	for assessment in assessments:
-		subject = ''
-		for course in courses:
-			if(course['name'] == assessment['course']):
-				subject = course['subject']
-				break
-		for course in courseL:
-			if(course.name == assessment['course']):
-				pCourse = course
-				break
-		staffCreator = staffBySubject[subject][0]
+		course = (Material.objects.filter(name=assessment['name'])[0]).courseFrom
+		subject = course.subject
+		staffCreator = Staff.objects.filter(subject=subject)[0]
 		add_assessment(add_material(assessment['name'], assessment['visibility'],
-									pCourse, staffCreator), assessment['deadline'], 
+									course, staffCreator), assessment['deadline'], 
 									assessment['submissionDate'])
 									
 	for announcement in announcements:
-		#convert string to course
-		course = Course.objects.filter(name=announcement['name'])[0]
+		course = Course.objects.filter(name=announcement['course'])[0]
 		add_announcement(course, announcement['title'], announcement['body'], announcement['date'])
 						
 def add_user(username, email, password, fname, lname):
 	
 	#necessary to do this rather than get_or_create because create_user hashes passwords
 	try:
-		return User.objects.get(username = email)
+		return User.objects.get(username = username)
 	except User.DoesNotExist:
 		return User.objects.create_user(username = username,
 					email = email, password = password,
@@ -263,7 +229,8 @@ def add_subject(name):
 	return Subject.objects.get_or_create(name = name)[0]
 
 def add_course(name, courseID, subject, managers):
-	c = Course.objects.get_or_create(name = name, subject = subject)[0]
+	c = Course.objects.update_or_create(name = name, 
+										defaults = {'subject': subject})[0]
 	c.courseID = courseID
 	c.subject = subject
 	for manager in managers:
@@ -272,14 +239,12 @@ def add_course(name, courseID, subject, managers):
 	return c
 	
 def add_visitedcourse(date, student, course):
-	v = VisitedCourse.objects.get_or_create(student = student, course = course)
-	v.date = date
-	v.save()
-	return v
+	return VisitedCourse.objects.update_or_create(
+		student = student, course = course, date = date, defaults={'date': date})[0]
 
 def add_material(name, visibility, course, staffCreator):
-	return Material.objects.get_or_create(name = name, visibility = visibility, 
-										courseFrom = course, createdBy = staffCreator)[0]
+	return Material.objects.update_or_create(name = name, defaults={'visibility' : visibility, 
+										'courseFrom' : course, 'createdBy' : staffCreator})[0]
 	
 def add_file(material, datePosted):
 	f = File.objects.get_or_create(material = material)[0]
@@ -288,15 +253,14 @@ def add_file(material, datePosted):
 	return f
 
 def add_assessment(material, deadline, submissionDate):
-	return Assessment.objects.get_or_create(material = material, deadline = deadline, submissionDate = submissionDate)[0]
+	return Assessment.objects.update_or_create(material = material, 
+					defaults={'deadline' : deadline, 
+							  'submissionDate' : submissionDate})[0]
 	
 def	add_announcement(course, title, body, date):
-	a = Announcement.objects.get_or_create(course = course)
-	a.title = title
-	a.body = body
-	a.date = date
-	a.save()
-	return a
+	return Announcement.objects.update_or_create(
+		course = course, defaults={'title':title, 
+									'body':body, 'date':date})[0]
 	
 #Start execution here!
 if __name__ == '__main__':
