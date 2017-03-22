@@ -29,11 +29,13 @@
 							<li><a href="{% url 'noodle:studenthome' %}">MyNoodle</a></li>
 						{% endif %}
 						<li><a href="{% url 'noodle:logout' %}">Logout</a></li>
+						<li><a href="{% url 'search' %}">Search</a></li>
 					</ul>
 					{% else %}
 					<ul>
 						<li><a href="{% url 'noodle:login' %}">Login</a></li>
 						<li><a href="{% url 'noodle:register' %}">Register</a></li>
+						<li><a href="{% url 'search' %}">Search</a></li>
 					</ul>
 					{% endif %}
 				</nav>

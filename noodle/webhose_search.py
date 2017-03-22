@@ -54,7 +54,5 @@ def run_query(search_terms, size=10):
         print(e)
         print("Error when querying the Webhose API")
 
-     
-
 
     return results
