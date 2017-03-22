@@ -41,7 +41,7 @@ REGISTRATION_AUTO_LOGIN = True
 
 LOGIN_REDIRECT_URL = '/noodle/'
 
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = '/noodle/login/'
 # Application definition
 
 INSTALLED_APPS = [
