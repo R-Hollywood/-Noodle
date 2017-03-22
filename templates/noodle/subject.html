@@ -3,17 +3,17 @@
 {% extends 'noodle/base.html' %}
 {% load staticfiles %}
 
-	{% block title_block %}
-	<!-- unsure of actual django variable name? -->
-	{{ subject_name}}
-	{% endblock %}
+{% block title_block %}
+{% endblock %}
 
-	{% block body_block %}
+{% block body_block %}
+		
 	{% if subject %}
-	<section id="main" class="wrapper">
-	<header class="major">
-			<h1> {{ subject_name}} </h1>
+		<section id="main" class="wrapper">
+		<header class="major">
+			<h1> {{ subject }} </h1>
 			<p />
+<<<<<<< HEAD
 	</header>
 	<div id="menu2">
 	<div id="sidebar2">
@@ -29,10 +29,29 @@
 	</ul>
 	</div>
 	
+=======
+		</header>
+		<div id="menu1">
+		<div id="sidebar1">
+			<h2>Courses</h2>
+		</div>
+	
+		<ul>
+			{% include 'noodle/paginator.html' with items=courses %}
+		</ul>
+		</div>
+		</section>
+		{% if tier %}
+			<a href="{% url 'noodle:add_course' subject.slug %}"> Add Course</a>
+		{% endif %}
+>>>>>>> d24e4e4fee065b1638c3e6c7ad9a610503267ce7
 	{% else %}
-		<p> The subject {{subject}} is not an existing subject</p>
-		<!-- If user is admin offer them the option to add the subject -->
+		<p> The requested subject could not be found</p>
 		
-	</section>
-	{% endblock %}
+		{% if tier == 2 %}
+			<li><a href="{% url 'noodle:add_subject' %}"> Add Subject</a></li>
+		{% endif %}
+		
+	{% endif %}
+{% endblock %}
 

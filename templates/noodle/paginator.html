@@ -8,8 +8,13 @@
 
 {% block page_block %}
 	{% for item in items %}
-	{% url 'show_category' category.slug %}
-		<a href="{% url base_url item.slug %}">{{ item.name }}></a>
+		{% if find_course %}
+			<li><a href="{% url 'noodle:show_subject' item.subject.slug %}{{item.slug}}/">{{ item.name }}</a></li>
+		{% elif base_url %}
+			<li><a href="{{base_url}}{{item.slug}}/">{{ item.name }}</a></li>
+		{% else %}
+			<li><a href="{{request.get_full_path}}{{item.slug}}/">{{ item.name }}</a></li>
+		{% endif %}
 		</br>
 	{% endfor %}
 	
@@ -18,6 +23,8 @@
 			{% if items.has_previous %}
 				<a href="?page={{ items.previous_page_number }}">Previous</a>
 			{% endif %}
+			
+			{{ items.page_range }}
 			
 			{% for pNo in items.page_range %}
 				{% if pNo == items.number %}

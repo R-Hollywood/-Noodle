@@ -3,22 +3,25 @@
 
 
 
-	{% block title_block %}
+{% block title_block %}
 	Student Registration
-	{% endblock %}
+{% endblock %}
 	
 	
-	{% block body_block %}
+{% block body_block %}
 	<section id="main" class="wrapper">
+	
 	<header class="major">
 	<h1> Student Registration </h1>
 	<p />
-	</header>	
+	</header>
+	
 	<form id="StudentUserProfileForm" method="post" action="{% url 'noodle:registerStudent' %}" enctype="multipart/form-data">
 		{% csrf_token %}
 		{{user_form.as_p}}
 		{{profile_form.as_p}}
 		<input type="submit" name="submit" value="Register" />
+	
 	</section>
-	{% endblock %}
+{% endblock %}
 	

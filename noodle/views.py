@@ -10,38 +10,62 @@ from datetime import datetime
 
 def render(request, page, context_dict):
 	
-	context_dict['tier'] = False
+	context_dict['tier'] = 0
 	user = request.user
 	
-	if(hasattr(user, 'admin') and user.admin != None):
-		context_dict['tier'] = True
-	if(hasattr(user, 'staff') and user.staff != None):
-		context_dict['tier'] = True
-
+	if(user.is_authenticated()):
+		
+		homePage = (page == 'noodle/homepage_extends_base.html')
+			
+		#we can separate staff from admin
+		#but in practise, identification with 'is_superuser' is likely more practical
+		if(hasattr(user, 'admin') and user.admin != None):
+			context_dict['tier'] = 2
+			
+		if(hasattr(user, 'staff') and user.staff != None):
+			context_dict['tier'] = 1
+				
 	return shortcuts.render(request, page, context_dict)
 
 def home(request):
+
+	user = request.user
 	
-	subject_list = Subject.objects
-	course_list = Course.objects
-	context_dict = {'subject': subject_list, 'course': course_list}
-	return render(request, 'noodle/homepage_extends_base.html', context_dict)
+	if(user.is_authenticated()):
+		if(hasattr(user, 'admin') and user.admin != None):
+			return HttpResponseRedirect(reverse('noodle:teachhome'))
+	
+		if(hasattr(user, 'staff') and user.staff != None):
+			return HttpResponseRedirect(reverse('noodle:teachhome'))
+		
+		return HttpResponseRedirect(reverse('noodle:studenthome'))
+	
+	return render(request, 'noodle/homepage_extends_base.html', {})
 
 @login_required
 def teachhome(request):
 	context_dict = {}
+	context_dict['courses'] = Course.objects.all()
+	context_dict['recentFiles'] = (File.objects.all())[:5]
 	return render(request,'noodle/teachhome.html', context_dict)
+	
 @login_required
 def studenthome(request):
 	context_dict = {}
-	return render(request,'noodle/studenthome.html', context_dict)		
+	recentCourses = VisitedCourse.objects.all()[:5]
+	context_dict['recentCourses'] = []
+	for recentCourse in recentCourses:
+		(context_dict['recentCourses']).append(recentCourse.course)
+	
+	return render(request,'noodle/studenthome.html', context_dict)
+	
 @login_required	
 def show_subject(request, subject_name_slug):
 	context_dict = {}
 	try:
-		subject = Subjects.objects.get(slug=subject_name_slug)
+		subject = Subject.objects.get(slug=subject_name_slug)
 		courses = Course.objects.filter(subject=subject)
-		context_dict['courses'] = courses
+		context_dict['courses'] = pager(request, courses, 10)
 		context_dict['subject'] = subject
 	except Subject.DoesNotExist:
 		context_dict['subject'] = None
@@ -49,12 +73,67 @@ def show_subject(request, subject_name_slug):
 	return render(request, 'noodle/subject.html', context_dict)
 	
 @login_required	
-def show_course(request, course_name_slug):
-	return 'stub'
+def show_course(request, subject_name_slug, course_name_slug):
+	context_dict = {}
+	try:
+		course = Course.objects.get(slug=course_name_slug)
+		subject = course.subject
+		material = Material.objects.filter(courseFrom=course)
+		context_dict['subject'] = subject
+		context_dict['course'] = course
+		context_dict['material'] = material
+		
+		#update student's visited courses
+		user = request.user
+		if(user.is_authenticated() and hasattr(user, 'student') and user.student != None):
+			VisitedCourse.objects.update_or_create(
+							student = user.student, course = course, 
+							defaults={'date': datetime.now()})[0]
+							
+	except Course.DoesNotExist:
+		context_dict['subject'] = None
+		context_dict['course'] = None
+		context_dict['material'] = None
+	return render(request, 'noodle/course.html', context_dict)
 	
 @login_required	
-def show_assessment(request, assessment_name_slug):
-	return 'stub'
+def show_announcements(request, subject_name_slug, course_name_slug):
+	context_dict = {}
+	try:
+		course = Course.objects.get(slug=course_name_slug)
+		announcements = Announcement.objects.filter(course=course)
+		context_dict['course'] = course
+		context_dict['announcements'] = pager(request, announcements, 10)
+	except Course.DoesNotExist:
+		context_dict['announcements'] = None
+		context_dict['course'] = None
+	return render(request, 'noodle/announcements.html', context_dict)
+	
+@login_required
+def show_announcement(request, subject_name_slug, course_name_slug, announcement_name_slug):
+	context_dict = {}
+	try:
+		courses = Course.objects.get(slug=course_name_slug)
+		announcement = Announcement.objects.get(slug=announcement_name_slug)
+		context_dict['courses'] = courses
+		context_dict['announcement'] = announcement
+	except Course.DoesNotExist:
+		context_dict['announcement'] = None
+		context_dict['course'] = None
+	return render(request, 'noodle/announcement.html', context_dict)
+	
+@login_required	
+def show_assessment(request, course_name_slug, assessment_name_slug):
+	context_dict = {}
+	try:
+		courses = Course.objects.get(slug=course_name_slug)
+		assessment = Assessment.objects.get(slug=assessment_name_slug)
+		context_dict['courses'] = courses
+		context_dict['assessment'] = assessment
+	except Course.DoesNotExist:
+		context_dict['assessment'] = None
+		context_dict['course'] = None
+	return render(request, 'noodle/assessment.html', context_dict)
 
 @login_required	
 def add_material(request):
@@ -191,7 +270,11 @@ def user_logout(request):
 	# Since we know the user is logged in, we can now just log them out.
 	logout(request)
 	# Take the user back to the homepage.
-	return HttpResponseRedirect(reverse('homepage'))
+	return HttpResponseRedirect(reverse('noodle:homepage'))
+	
+def test_pagination(request):
+	currPage = pager(request, Staff.objects.all(), 3)
+	return render(request, 'noodle/pageTest.html', {'currPage':currPage})
 
 #a helper method to page objects
 #request should be passed from the calling view

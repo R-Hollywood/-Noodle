@@ -15,7 +15,7 @@
 		<p />
 	</header>
 	<div id="frame">
-		<!--- This area should contain the links to course pages. Arranged by Subject in Alphabetical Order-->
+		{% include 'noodle/paginator.html' with items=courses find_course=True %}
 		
 	</div>
 		<div id="menu">
@@ -23,9 +23,9 @@
 			Recently Viewed
 		</div>
 		<ul>
-			<!-- This area should display links to the 5 most recently viewed pages-->
-			<li><a href="{% url 'noodle:show_courses' as course_url %}">...</a></li>
-			<li><a href="{% include 'noodle/paginator.html' with items=recentPages base_url=course_url %}" >...</a></li>
+			{% for recentCourse in recentCourses %}
+				<a href="{% url 'noodle:show_course' recentCourse.subject.slug recentCourse.slug %}">{{ recentCourse }}</a>
+			{% endfor %}
 		<ul>
 		
 	</div>
@@ -37,8 +37,8 @@
 		</div>
 		<ul>
 		<!-- This area should display links to Assignments due in the next 7 days-->
-		<li><a href="{% url 'noodle:show_material' as material_url %}">...</a></li>
-		<li><a href="{% include 'noodle/paginator.html' with items=assignmentPages base_url=material_url %}" >...</a></li>
+		<li>{% url 'noodle:show_material' as material_url %}</li>
+		<li>{% include 'noodle/paginator.html' with items=assignmentPages base_url=material_url %}</li>
 		</ul>
 		</div>
 		

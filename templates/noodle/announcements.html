@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+{% extends 'noodle/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+{% endblock %}
+
+{% block body_block %}
+	{% if course %}
+		<section id="main" class="wrapper">
+		<header class="major">
+			<h1> {{ course }} Announcements </h1>
+			<p />
+		</header>
+		
+		{% include 'noodle/paginator.html' with items=announcements %}
+		<!--Please order these in descending order of date-->
+	{% else %}
+		The announcements page could not be found!
+	{% endif %}
+{% endblock %}
+

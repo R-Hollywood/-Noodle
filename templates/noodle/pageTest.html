@@ -1,0 +1,12 @@
+{% extends 'noodle/base.html' %}
+{% load staticfiles %}
+
+
+
+	{% block title_block %}
+	{% endblock %}
+
+	{% block body_block %}
+		{% include 'noodle/paginator.html' with items=currPage %}
+	{% endblock %}
+
