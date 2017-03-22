@@ -26,6 +26,7 @@ class Admin(models.Model):
 		return self.user.username
 
 class Staff(models.Model):
+
 	#'inheritance'
 	user = models.OneToOneField(User, null = False, related_name = 'staff')
 	
@@ -60,7 +61,6 @@ class Course(models.Model):
 	name = models.CharField(max_length = 128)
 	slug = models.SlugField(unique=True)
 	subject = models.ForeignKey(Subject)
-	
 	staffManagers = models.ManyToManyField(Staff, related_name = 'courses')
 	
 	class Meta:
@@ -78,6 +78,7 @@ class Course(models.Model):
 		
 		
 class Student(models.Model):
+
 	#'inheritance'
 	user = models.OneToOneField(User, null = False, related_name = 'student')
 	
@@ -127,7 +128,7 @@ class Material(models.Model):
 		return self.name
 
 class File(models.Model):
-	#'inheritance'
+	
 	material = models.OneToOneField(Material, unique = True)
 	file = models.FileField(upload_to='noodle/uploads/%Y/%m/%d', null = True)
 	#so paginator can access slug directly
@@ -148,7 +149,7 @@ class File(models.Model):
 		return self.material.name
 
 class Assessment(models.Model):
-	#'inheritance'
+	
 	material = models.OneToOneField(Material, unique = True)
 	submission = models.FileField(null = True)
 	#so paginator can access slug directly
@@ -197,9 +198,8 @@ class Announcement(models.Model):
 	def __unicode__(self):
 		return self.course.name + ":" + self.name
 	
-#do we need this?
 class UserProfile(models.Model):
-	# Links UserProfile to a User model instance
+	#'inheritance'
 	user = models.ImageField(upload_to='profile_images', blank=True)
 
 	def __str__(self):

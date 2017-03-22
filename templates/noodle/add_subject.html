@@ -4,6 +4,7 @@
 {% load staticfiles %}
 
 	{% block title_block %}
+		Add Subject
 	{% endblock %}
 
 	{% block body_block %}
@@ -13,6 +14,7 @@
 			<p />
 		</header>
 		<!-- form for adding subject-->
+		<form id="SubjectForm" method="post" action="/teachhome/add_subject">
 	<button onclick="goBack()">Go Back</button>
 	<script src="{% static 'js/backButton.js' %}"></script>
 	</section>
