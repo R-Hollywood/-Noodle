@@ -1,2 +1,7 @@
+db.sqlite3
 db.*
 noodle/migrations/
+<<<<<<< HEAD
+db.sqlite3
+=======
+>>>>>>> def15805eb2ffe7cb126dcf49effcd7240d2c4d7
