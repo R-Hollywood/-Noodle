@@ -14,26 +14,10 @@
 		<header class="major">
 			<h1> {{ subject }} </h1>
 			<p />
-<<<<<<< HEAD
-	</header>
-	<div id="menu2">
-	<div id="sidebar2">
-		<h2>Courses</h2>
-	</div>
-	
-	<ul>
-		<!-- List of links to Courses -->
-		{% for course in subject %}
-		<ul>
-			<li><a href="{% url 'noodle:course' course.slug %}">{{ course.name }}</a></li>
-		<ul>
-	</ul>
-	</div>
-	
-=======
+
 		</header>
-		<div id="menu1">
-		<div id="sidebar1">
+		<div id="menu2">
+		<div id="sidebar2">
 			<h2>Courses</h2>
 		</div>
 	
@@ -45,14 +29,10 @@
 		{% if tier %}
 			<a href="{% url 'noodle:add_course' subject.slug %}"> Add Course</a>
 		{% endif %}
->>>>>>> d24e4e4fee065b1638c3e6c7ad9a610503267ce7
+
 	{% else %}
 		<p> The requested subject could not be found</p>
-		
-		{% if tier == 2 %}
-			<li><a href="{% url 'noodle:add_subject' %}"> Add Subject</a></li>
-		{% endif %}
-		
 	{% endif %}
+</br>
 {% endblock %}
 
