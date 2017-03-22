@@ -10,10 +10,15 @@ from django.db import models
     #docfile = models.FileField(upload_to='documents/%Y/%m/%d')
     
 class Admin(models.Model):
+<<<<<<< HEAD
+	
+	user = models.OneToOneField(User, blank = False, related_name = 'admin')
+=======
 	#name, password, email, forename and surname attributes are included with django's 'User' model
 	#in our case we should simply set the username to be the same as the email address
 	#because django has a lot involved in the underlying framework
 	user = models.OneToOneField(User, null = False, related_name = 'admin')
+>>>>>>> d24e4e4fee065b1638c3e6c7ad9a610503267ce7
 	
 	def save(self, *args, **kwargs):
 		self.user.is_superuser = True
@@ -26,12 +31,21 @@ class Admin(models.Model):
 		return self.user.username
 
 class Staff(models.Model):
+<<<<<<< HEAD
+	
+	user = models.OneToOneField(User, blank = False, related_name = 'staff')
+=======
 	#'inheritance'
 	user = models.OneToOneField(User, null = False, related_name = 'staff')
+>>>>>>> d24e4e4fee065b1638c3e6c7ad9a610503267ce7
 	
 	subject = models.CharField(max_length = 128)
 	status = models.CharField(max_length = 128)
 	
+<<<<<<< HEAD
+	
+=======
+>>>>>>> d24e4e4fee065b1638c3e6c7ad9a610503267ce7
 	def __str__(self): 
 		return self.user.username
 		
@@ -57,11 +71,13 @@ class Course(models.Model):
 	name = models.CharField(max_length = 128)
 	slug = models.SlugField(unique=True)
 	subject = models.ForeignKey(Subject)
-	
 	staffManagers = models.ManyToManyField(Staff, related_name = 'courses')
+<<<<<<< HEAD
+=======
 	
 	class Meta:
 		ordering = ['name']
+>>>>>>> d24e4e4fee065b1638c3e6c7ad9a610503267ce7
 	
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
@@ -75,14 +91,23 @@ class Course(models.Model):
 		
 		
 class Student(models.Model):
+<<<<<<< HEAD
+
+	user = models.OneToOneField(User, blank = False, related_name = 'student')
+=======
 	#'inheritance'
 	user = models.OneToOneField(User, null = False, related_name = 'student')
+>>>>>>> d24e4e4fee065b1638c3e6c7ad9a610503267ce7
 	
 	subject = models.CharField(max_length = 128)
 	yearOfStudy = models.IntegerField(default = 1)
 	
+<<<<<<< HEAD
+	enrolledIn = models.ManyToManyField(Course, related_name = 'students')
+=======
 	visitedCourse = models.ManyToManyField(Course, through = 'VisitedCourse')
 	enrolledIn = models.ManyToManyField(Course, related_name = 'enrolledStudents')
+>>>>>>> d24e4e4fee065b1638c3e6c7ad9a610503267ce7
 	
 	def __str__(self): 
 		return self.user.username
@@ -124,7 +149,7 @@ class Material(models.Model):
 		return self.name
 
 class File(models.Model):
-	#'inheritance'
+	
 	material = models.OneToOneField(Material, unique = True)
 	file = models.FileField(upload_to='noodle/uploads/%Y/%m/%d', null = True)
 	#so paginator can access slug directly
@@ -145,7 +170,7 @@ class File(models.Model):
 		return self.material.name
 
 class Assessment(models.Model):
-	#'inheritance'
+	
 	material = models.OneToOneField(Material, unique = True)
 	submission = models.FileField(null = True)
 	#so paginator can access slug directly
@@ -196,7 +221,11 @@ class Announcement(models.Model):
 	
 #do we need this?
 class UserProfile(models.Model):
+<<<<<<< HEAD
+		
+=======
 	# Links UserProfile to a User model instance
+>>>>>>> d24e4e4fee065b1638c3e6c7ad9a610503267ce7
 	user = models.ImageField(upload_to='profile_images', blank=True)
 
 	def __str__(self):
