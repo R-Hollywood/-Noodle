@@ -173,6 +173,9 @@ class Announcement(models.Model):
 	
 	course = models.ForeignKey(Course, null = False, related_name="Announcement")
 	
+	class Meta:
+		ordering = ['date']
+	
 	def save(self, *args, **kwargs):
 		self.slug = slugify(title)
 		super(Material, self).save(*args, **kwargs)

@@ -107,11 +107,25 @@ def show_course(request, subject_name_slug, course_name_slug):
 	return render(request, 'noodle/course.html', context_dict)
 	
 @login_required	
-def show_announcements(request, course_name_slug, announcement_name_slug):
+def show_announcements(request, subject_name_slug, course_name_slug):
+	context_dict = {}
+	try:
+		course = Course.objects.get(slug=course_name_slug)
+		announcements = Announcement.objects.filter(course=course)
+		print announcements
+		context_dict['course'] = course
+		context_dict['announcements'] = announcements
+	except Course.DoesNotExist:
+		context_dict['announcements'] = None
+		context_dict['course'] = None
+	return render(request, 'noodle/announcements.html', context_dict)
+	
+@login_required
+def show_announcement(request, subject_name_slug, course_name_slug, announcement_name_slug):
 	context_dict = {}
 	try:
 		courses = Course.objects.get(slug=course_name_slug)
-		announcement = Annoucement.objects.get(slug=announcement_name_slug)
+		announcement = Announcement.objects.get(slug=announcement_name_slug)
 		context_dict['courses'] = courses
 		context_dict['announcement'] = announcement
 	except Course.DoesNotExist:

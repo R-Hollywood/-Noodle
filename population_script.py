@@ -109,6 +109,9 @@ def populate():
 		 'courseID': '2M',
 		 'subject': 'Mathematics'}]
 		 
+	visited_courses = [
+	]
+		 
 	files = [
 		{'name': 'Independence Day', 
 		 'visibility': True, 
@@ -125,6 +128,20 @@ def populate():
 		 'course': 'History2',
 		 'deadline': datetime.datetime(1942,06,22),
 		 'submissionDate': datetime.datetime(1945,05,8)}]
+		 
+	announcements = [
+		{'title': "History2 Created!"
+		 'body': "Nice-Memel!"
+		 'date': datetime.datetime(1914, 06, 28)
+		 'course': History2},
+		 {'title': "Philosophy2 Created!"
+		 'body': "This sentence is a lie."
+		 'date': datetime.datetime(1648, 10, 24)
+		 'course': Philosophy2},
+		 {'title': "Mathematics2 Created!"
+		 'body': "History2 is here!"
+		 'date': datetime.datetime(1918, 11, 11)
+		 'course': Mathematics2},]
 		 
 	for admin in admins:
 		add_admin(add_user(admin['username'], admin['email'], admin['password'], 
@@ -200,6 +217,10 @@ def populate():
 		add_assessment(add_material(assessment['name'], assessment['visibility'],
 									pCourse, staffCreator), assessment['deadline'], 
 									assessment['submissionDate'])
+									
+	for announcement in announcements:
+		#convert string to course
+		add_announcement(course, announcement['title'], announcement['body'], announcement['date'])
 						
 def add_user(username, email, password, fname, lname):
 	
@@ -241,6 +262,12 @@ def add_course(name, courseID, subject, managers):
 		c.staffManagers.add(manager)
 	c.save()
 	return c
+	
+def add_visitedcourse(date, student, course):
+	v = VisitedCourse.objects.get_or_create(student = student, course = course)
+	v.date = date
+	v.save()
+	return v
 
 def add_material(name, visibility, course, staffCreator):
 	return Material.objects.get_or_create(name = name, visibility = visibility, 
@@ -254,6 +281,14 @@ def add_file(material, datePosted):
 
 def add_assessment(material, deadline, submissionDate):
 	return Assessment.objects.get_or_create(material = material, deadline = deadline, submissionDate = submissionDate)[0]
+	
+def	add_announcement(course, title, body, date):
+	a = Announcement.objects.get_or_create(course = course)
+	a.title = title
+	a.body = body
+	a.date = date
+	a.save()
+	return a
 	
 #Start execution here!
 if __name__ == '__main__':

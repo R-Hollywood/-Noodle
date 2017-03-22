@@ -37,7 +37,9 @@
 		</div>
 		{% if tier %}
 		<a href="{% url 'noodle:add_material' subject.slug course.slug %}">Add File/Assignment</a>
+		</br>
 		{% endif %}
+		<a href="{% url 'noodle:show_subject' subject.slug %}">Back to Subject</a>
 		{% else %}
 			<p> The requested course could not be found</p>
 			<!-- If user is admin/staff offer them the option to add the course -->
