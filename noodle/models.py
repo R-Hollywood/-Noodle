@@ -154,6 +154,9 @@ class Assessment(models.Model):
 	deadline = models.DateTimeField()
 	submissionDate = models.DateTimeField()
 	
+	class Meta:
+		ordering = ['-submissionDate']
+	
 	def save(self, *args, **kwargs):
 		self.slug = self.material.slug
 		super(Assessment, self).save(*args, **kwargs)
@@ -164,9 +167,14 @@ class Assessment(models.Model):
 	def __unicode__(self): 
 		return self.material.name
 		
+class StudentSubmission(models.Model):
+	file = models.FileField(upload_to='noodle/submissions/%Y/%m/%d', null = True)
+	student = models.ForeignKey(Student, related_name="user_submission")
+	assignment = models.ForeignKey(Assessment, related_name="user_submission")
+		
 class Announcement(models.Model):
 	
-	title = models.CharField(max_length = 128)
+	name = models.CharField(max_length = 128)
 	body = models.CharField(max_length = 1024)
 	slug = models.SlugField(unique=True)
 	date = models.DateTimeField()
@@ -174,17 +182,17 @@ class Announcement(models.Model):
 	course = models.ForeignKey(Course, null = False, related_name="Announcement")
 	
 	class Meta:
-		ordering = ['date']
+		ordering = ['-date']
 	
 	def save(self, *args, **kwargs):
-		self.slug = slugify(title)
-		super(Material, self).save(*args, **kwargs)
+		self.slug = slugify(self.name)
+		super(Announcement, self).save(*args, **kwargs)
 	
 	def __str__(self):
-		return self.course.name + ":" + self.title
+		return self.course.name + ":" + self.name
 		
 	def __unicode__(self):
-		return self.course.name + ":" + self.title
+		return self.course.name + ":" + self.name
 	
 #do we need this?
 class UserProfile(models.Model):

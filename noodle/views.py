@@ -26,22 +26,6 @@ def render(request, page, context_dict):
 			context_dict['tier'] = 1
 				
 	return shortcuts.render(request, page, context_dict)
-	
-def listingCourse(request):
-	course_list = Course.objects.all()
-	paginator = Paginator(course_list, 25) # Show 25 contacts per page
-
-	page = request.GET.get('page')
-	try:
-		contacts = paginator.page(page)
-	except PageNotAnInteger:
-		# If page is not an integer, deliver first page.
-		course = paginator.page(1)
-	except EmptyPage:
-		# If page is out of range (e.g. 9999), deliver last page of results.
-		course = paginator.page(paginator.num_pages)
-
-	return render(request, 'list.html', {'course': course})	
 
 def home(request):
 
@@ -56,7 +40,7 @@ def home(request):
 		
 		return HttpResponseRedirect(reverse('noodle:studenthome'))
 	
-	return render(request, 'noodle/homepage_extends_base.html', context_dict)
+	return render(request, 'noodle/homepage_extends_base.html', {})
 
 @login_required
 def teachhome(request):
@@ -68,9 +52,11 @@ def teachhome(request):
 	
 @login_required
 def studenthome(request):
-	subject_list = Subject.objects
-	course_list = Course.objects
-	context_dict = {'subject': subject_list, 'course': course_list}
+	context_dict = {}
+	recentCourses = VisitedCourse.objects.all()[:5]
+	context_dict['recentCourses'] = []
+	for recentCourse in recentCourses:
+		(context_dict['recentCourses']).append(recentCourse.course)
 	
 	return render(request,'noodle/studenthome.html', context_dict)
 	
@@ -81,8 +67,7 @@ def show_subject(request, subject_name_slug):
 	try:
 		subject = Subject.objects.get(slug=subject_name_slug)
 		courses = Course.objects.filter(subject=subject)
-		courses = pager(request, courses, 10)
-		context_dict['courses'] = courses
+		context_dict['courses'] = pager(request, courses, 10)
 		context_dict['subject'] = subject
 	except Subject.DoesNotExist:
 		context_dict['subject'] = None
@@ -92,7 +77,6 @@ def show_subject(request, subject_name_slug):
 @login_required	
 def show_course(request, subject_name_slug, course_name_slug):
 	context_dict = {}
-	#update user's visited courses somewhere
 	try:
 		course = Course.objects.get(slug=course_name_slug)
 		subject = course.subject
@@ -100,6 +84,14 @@ def show_course(request, subject_name_slug, course_name_slug):
 		context_dict['subject'] = subject
 		context_dict['course'] = course
 		context_dict['material'] = material
+		
+		#update student's visited courses
+		user = request.user
+		if(user.is_authenticated() and hasattr(user, 'student') and user.student != None):
+			VisitedCourse.objects.update_or_create(
+							student = user.student, course = course, 
+							defaults={'date': datetime.now()})[0]
+							
 	except Course.DoesNotExist:
 		context_dict['subject'] = None
 		context_dict['course'] = None
@@ -114,7 +106,7 @@ def show_announcements(request, subject_name_slug, course_name_slug):
 		announcements = Announcement.objects.filter(course=course)
 		print announcements
 		context_dict['course'] = course
-		context_dict['announcements'] = announcements
+		context_dict['announcements'] = pager(request, announcements, 10)
 	except Course.DoesNotExist:
 		context_dict['announcements'] = None
 		context_dict['course'] = None

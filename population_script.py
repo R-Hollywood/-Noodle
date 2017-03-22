@@ -132,15 +132,15 @@ def populate():
 		 'submissionDate': datetime.datetime(1945,05,8)}]
 		 
 	announcements = [
-		{'title': "History2 Created!",
+		{'name': "History2 Created!",
 		 'body': "Nice-Memel!",
 		 'date': datetime.datetime(1914, 06, 28),
 		 'course': 'History2'},
-		 {'title': "Philosophy2 Created!",
+		 {'name': "Philosophy2 Created!",
 		 'body': "This sentence is a lie.",
 		 'date': datetime.datetime(1648, 10, 24),
 		 'course': 'Philosophy2'},
-		 {'title': "Mathematics2 Created!",
+		 {'name': "Mathematics2 Created!",
 		 'body': "History2 is here!",
 		 'date': datetime.datetime(1918, 11, 11),
 		 'course': 'Mathematics2'}]
@@ -177,7 +177,7 @@ def populate():
 		add_visitedcourse(visited_course['date'], student, course)
 					
 	for file in files:
-		course = (Material.objects.filter(name=file['name'])[0]).courseFrom
+		course = Course.objects.filter(name=file['course'])[0]
 		subject = course.subject
 		#here we just take the first staff member for any given subject
 		staffCreator = Staff.objects.filter(subject=subject)[0]
@@ -185,7 +185,7 @@ def populate():
 					course, staffCreator), file['datePosted'])
 	
 	for assessment in assessments:
-		course = (Material.objects.filter(name=assessment['name'])[0]).courseFrom
+		course = Course.objects.filter(name=assessment['course'])[0]
 		subject = course.subject
 		staffCreator = Staff.objects.filter(subject=subject)[0]
 		add_assessment(add_material(assessment['name'], assessment['visibility'],
@@ -194,7 +194,7 @@ def populate():
 									
 	for announcement in announcements:
 		course = Course.objects.filter(name=announcement['course'])[0]
-		add_announcement(course, announcement['title'], announcement['body'], announcement['date'])
+		add_announcement(course, announcement['name'], announcement['body'], announcement['date'])
 						
 def add_user(username, email, password, fname, lname):
 	
@@ -240,7 +240,7 @@ def add_course(name, courseID, subject, managers):
 	
 def add_visitedcourse(date, student, course):
 	return VisitedCourse.objects.update_or_create(
-		student = student, course = course, date = date, defaults={'date': date})[0]
+		student = student, course = course, defaults={'date': date})[0]
 
 def add_material(name, visibility, course, staffCreator):
 	return Material.objects.update_or_create(name = name, defaults={'visibility' : visibility, 
@@ -257,9 +257,9 @@ def add_assessment(material, deadline, submissionDate):
 					defaults={'deadline' : deadline, 
 							  'submissionDate' : submissionDate})[0]
 	
-def	add_announcement(course, title, body, date):
+def	add_announcement(course, name, body, date):
 	return Announcement.objects.update_or_create(
-		course = course, defaults={'title':title, 
+		course = course, defaults={'name':name, 
 									'body':body, 'date':date})[0]
 	
 #Start execution here!
