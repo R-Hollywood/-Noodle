@@ -1,2 +1,3 @@
 db.*
 noodle/migrations/
+db.sqlite3
