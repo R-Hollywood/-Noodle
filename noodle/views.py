@@ -7,6 +7,8 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime
+from noodle.webhose_search import run_query
+
 
 def render(request, page, context_dict):
 	
@@ -297,3 +299,11 @@ def pager(request, object_list, perPage):
 		currPage = paginator.page(paginator.num_pages)
 	
 	return currPage
+
+def search(request):
+	result_list = []
+	if request.method == 'POST':
+		query = request.POST['query'].strip()
+		if query:
+			result_list = run_query(query)
+	return render(request, 'noodle/search.html', {'result_list': result_list})
