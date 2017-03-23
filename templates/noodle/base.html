@@ -23,11 +23,7 @@
 				<nav id="nav">
 					{% if user.is_authenticated %}
 					<ul>
-						{% if tier %}
-							<li><a href="{% url 'noodle:teachhome' %}">MyNoodle</a></li>
-						{% else %}
-							<li><a href="{% url 'noodle:studenthome' %}">MyNoodle</a></li>
-						{% endif %}
+						<li><a href="{% url 'noodle:myNoodle' %}">MyNoodle</a></li>
 						<li><a href="{% url 'noodle:logout' %}">Logout</a></li>
 						<li><a href="{% url 'noodle:search' %}">Search</a></li>
 					</ul>
