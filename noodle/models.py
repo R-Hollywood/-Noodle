@@ -179,10 +179,16 @@ class Assessment(models.Model):
 class StudentSubmission(models.Model):
 	submissionDate = models.DateTimeField(null=True, blank=True)
 	file = models.FileField(upload_to='noodle/submissions/%Y/%m/%d', null = True)
-	mark = models.CharField(max_length = 128)
+	mark = models.CharField(max_length = 128, null=True)
 	
 	student = models.ForeignKey(Student, related_name="user_submission")
 	assignment = models.ForeignKey(Assessment, related_name="user_submission")
+	
+	def __str__(self): 
+		return self.assignment.material.name + '_' + self.student.user.username
+		
+	def __unicode__(self): 
+		return self.assignment.material.name + '_' + self.student.user.username
 		
 class Announcement(models.Model):
 	

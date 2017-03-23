@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime
+from datetime import timedelta
 from noodle.webhose_search import run_query
 
 
@@ -229,41 +230,44 @@ def show_announcement(request, subject_name_slug, course_name_slug, announcement
 def show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug):
 	context_dict = {}
 	try:
-		courses = Course.objects.get(slug=course_name_slug)
+		course = Course.objects.get(slug=course_name_slug)
 		assessment = Assessment.objects.get(slug=assessment_name_slug)
-		context_dict['courses'] = courses
+		context_dict['course'] = course
 		context_dict['assessment'] = assessment
-		student = Student.objects.get(user=request.user.student)
+		student = Student.objects.get(user=request.user)
 		
 		form = StudentSubmissionForm()
 		if request.method == 'POST':
 			form = StudentSubmissionForm(request.POST, request.FILES)
 			if form.is_valid():
-				sub = StudentSubmissionForm.save(commit=False)
-				sub.submissionDate = datetime.now
+				sub = form.save(commit=False)
+				sub.submissionDate = datetime.now()
 				sub.assignment = assessment
 				sub.student = student
-				sub.save()
-				print(sub, sub.slug)
+				sub = form.save(commit=True)
+				print(sub)
 				request.method = 'GET'
 				return show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug)
+		context_dict['form'] = form
 		
 		context_dict['submission_string'] = ''
-		submission = StudentSubmission.objects.filter(assessessment=assessment, student=student)
+		submission = StudentSubmission.objects.filter(assignment=assessment, student=student)
 		
-		if(submission != None):
+		if(submission.exists()):
+			print submission
 			submission = submission[0]
 		
 			start_time = submission.submissionDate
-			end_time = submission.deadline
+			end_time = submission.assignment.deadline
 
-			time_delta = datetime()
+			time_delta = ''
 			if(end_time >= start_time):
 				time_delta = end_time - start_time
-				context_dict['submission_string'] = "You are before the deadline by" + str(datetime.timedelta(time_delta)
+				context_dict['submission_string'] = str(timedelta(seconds = 3))
+				context_dict['submission_string'] = "You are before the deadline by" + str(timedelta(time_delta))
 			else:
 				time_delta = start_time - end_time
-				context_dict['submission_string'] = "You are late for the deadline by" + str(datetime.timedelta(time_delta)
+				context_dict['submission_string'] = "You are late for the deadline by" + str(timedelta(time_delta))
 		
 	except Course.DoesNotExist:
 		context_dict['assessment'] = None
