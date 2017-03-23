@@ -140,7 +140,7 @@
 	#frameSta{
 		border-style: solid;
 		position: relative;
-		top:-17em;
+		top:-8.5em;
 		left:1em;
 		margin: 0 auto;
 		border-color:#70239a;
@@ -163,6 +163,7 @@
 		text-align:center;
 		display:block;
 	}
+	
 .button {
     background-color: #70239a; 
     border: none;
