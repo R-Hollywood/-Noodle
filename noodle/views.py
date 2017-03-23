@@ -45,6 +45,9 @@ def home(request):
 	return render(request, 'noodle/homepage_extends_base.html', {})
 
 @login_required
+def myNoodle(request):
+        return render(request,'noodle/myNoodle.html', {})
+@login_required
 def teachhome(request):
 	context_dict = {}
 	context_dict['myCourses'] = pager(request, Course.objects.filter(staffManagers__in=[request.user]), 10)
