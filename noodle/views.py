@@ -115,11 +115,14 @@ def show_subject(request, subject_name_slug):
 def show_course(request, subject_name_slug, course_name_slug):
 	context_dict = {}
 	try:
+		print 'memel'
 		course = Course.objects.get(slug=course_name_slug)
+		print course
 		subject = course.subject
 		material = Material.objects.filter(courseFrom=course)
 		context_dict['subject'] = subject
 		context_dict['course'] = course
+		print course
 		context_dict['material'] = material
 		context_dict['files'] = pager(request, Material.objects.filter(courseFrom=course, assessment=None), 10)
 		context_dict['assignments'] = pager(request, Material.objects.filter(courseFrom=course, file=None), 10)
@@ -140,33 +143,33 @@ def show_course(request, subject_name_slug, course_name_slug):
 			fileForm = FileForm(request.POST, request.FILES)
 			assignmentForm = AssignmentForm(data=request.POST)
 		
-		if form.is_valid() and fileForm.is_valid():
-			ass = form.save(commit=False)
-			ass.datePosted = datetime.now()
-			ass.courseFrom = course
-			ass.createdBy = request.user
-			ass.save()
-			file = fileForm.save(commit=False)
-			file.material = ass
-			file.save()
-			print(ass, ass.slug)
-			request.method = 'GET'
-			return show_course(request, subject_name_slug, course_name_slug)
+			if form.is_valid() and fileForm.is_valid():
+				ass = form.save(commit=False)
+				ass.datePosted = datetime.now()
+				ass.courseFrom = course
+				ass.createdBy = request.user
+				ass.save()
+				file = fileForm.save(commit=False)
+				file.material = ass
+				file.save()
+				print(ass, ass.slug)
+				request.method = 'GET'
+				return show_course(request, subject_name_slug, course_name_slug)
 			
-		elif form.is_valid() and assignmentForm.is_valid():
-			ass = form.save(commit=False)
-			ass.datePosted = datetime.now()
-			ass.courseFrom = course
-			ass.createdBy = request.user
-			ass.save()
-			assignment = assignmentForm.save(commit=False)
-			assignment.material = ass
-			assignment.save()
-			print(ass, ass.slug)
-			request.method = 'GET'
-			return show_course(request, subject_name_slug, course_name_slug)
-		else:
-			print(form.errors)
+			elif form.is_valid() and assignmentForm.is_valid():
+				ass = form.save(commit=False)
+				ass.datePosted = datetime.now()
+				ass.courseFrom = course
+				ass.createdBy = request.user
+				ass.save()
+				assignment = assignmentForm.save(commit=False)
+				assignment.material = ass
+				assignment.save()
+				print(ass, ass.slug)
+				request.method = 'GET'
+				return show_course(request, subject_name_slug, course_name_slug)
+			else:
+				print(form.errors)
 		
 		context_dict['form'] = form
 		context_dict['file_form'] = fileForm
@@ -223,13 +226,45 @@ def show_announcement(request, subject_name_slug, course_name_slug, announcement
 	return render(request, 'noodle/announcement.html', context_dict)
 	
 @login_required	
-def show_assessment(request, course_name_slug, assessment_name_slug):
+def show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug):
 	context_dict = {}
 	try:
 		courses = Course.objects.get(slug=course_name_slug)
 		assessment = Assessment.objects.get(slug=assessment_name_slug)
 		context_dict['courses'] = courses
 		context_dict['assessment'] = assessment
+		student = Student.objects.get(user=request.user.student)
+		
+		form = StudentSubmissionForm()
+		if request.method == 'POST':
+			form = StudentSubmissionForm(request.POST, request.FILES)
+			if form.is_valid():
+				sub = StudentSubmissionForm.save(commit=False)
+				sub.submissionDate = datetime.now
+				sub.assignment = assessment
+				sub.student = student
+				sub.save()
+				print(sub, sub.slug)
+				request.method = 'GET'
+				return show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug)
+		
+		context_dict['submission_string'] = ''
+		submission = StudentSubmission.objects.filter(assessessment=assessment, student=student)
+		
+		if(submission != None):
+			submission = submission[0]
+		
+			start_time = submission.submissionDate
+			end_time = submission.deadline
+
+			time_delta = datetime()
+			if(end_time >= start_time):
+				time_delta = end_time - start_time
+				context_dict['submission_string'] = "You are before the deadline by" + str(datetime.timedelta(time_delta)
+			else:
+				time_delta = start_time - end_time
+				context_dict['submission_string'] = "You are late for the deadline by" + str(datetime.timedelta(time_delta)
+		
 	except Course.DoesNotExist:
 		context_dict['assessment'] = None
 		context_dict['course'] = None

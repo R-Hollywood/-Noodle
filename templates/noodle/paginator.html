@@ -16,6 +16,10 @@
 			<li><a href="{% url 'noodle:show_subject' item.slug %}">{{ item.name }}</a></li>
 		{% elif base_url %}
 			<li><a href="{{base_url}}{{item.slug}}/">{{ item.name }}</a></li>
+		{% elif find_assessments %}
+			{% if tier or item.material.visibility %}
+				<li><a href="{% url 'noodle:show_' item.material.courseFrom.subject.slug item.material.courseFrom.slug item.slug %}">{{ item.name }}</a></li>
+			{% endif %}
 		{% else %}
 			<li><a href="{{request.get_full_path}}{{item.slug}}/">{{ item.name }}</a></li>
 		{% endif %}

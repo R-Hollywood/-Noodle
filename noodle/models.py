@@ -161,7 +161,6 @@ class Assessment(models.Model):
 	submission = models.FileField(null = True)
 	#so paginator can access slug directly
 	slug = models.SlugField(unique=True)
-
 	deadline = models.DateTimeField()
 	
 	class Meta:
@@ -180,6 +179,8 @@ class Assessment(models.Model):
 class StudentSubmission(models.Model):
 	submissionDate = models.DateTimeField(null=True, blank=True)
 	file = models.FileField(upload_to='noodle/submissions/%Y/%m/%d', null = True)
+	mark = models.CharField(max_length = 128)
+	
 	student = models.ForeignKey(Student, related_name="user_submission")
 	assignment = models.ForeignKey(Assessment, related_name="user_submission")
 		
