@@ -66,6 +66,12 @@ class AssignmentForm(forms.ModelForm):
 		model = Assessment
 		fields = ('deadline',)
 		
+class StudentSubmissionForm(forms.ModelForm):
+	
+	class Meta:
+		model = File
+		fields = ('file',)
+		
 class AnnouncementForm(forms.ModelForm):
 
 	courseName = None

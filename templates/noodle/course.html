@@ -25,7 +25,7 @@
 		</div>
 	
 		<ul>
-			{% include 'noodle/paginator.html' with items=assignments %}
+			{% include 'noodle/paginator.html' with items=assignments find_assessments=true %}
 		</ul>
 		</div>
 		<div id="menu2">
@@ -36,10 +36,11 @@
 			{% include 'noodle/paginator.html' with items=files %}
 			</ul>
 		</div>
-		{% else %}
-			<p> The requested course could not be found</p>
-			</br>
-		{% endif %}
+		
+	{% else %}
+		<p> The requested course could not be found</p>
+		</br>
+	{% endif %}
 				
 		{% if tier %}
 		

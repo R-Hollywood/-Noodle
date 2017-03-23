@@ -17,7 +17,7 @@
 	</header>
 	<div id="frame">
 		<h2>My Courses</h2>
-		{% include 'noodle/paginator.html' with items=myCourses find_subject=True %}
+		{% include 'noodle/paginator.html' with items=myCourses find_course=True %}
 		<h2>Subjects</h2>
 		{% include 'noodle/paginator.html' with items=subjects find_subject=True %}
 		<h2>Courses</h2>
@@ -43,8 +43,7 @@
 		</div>
 		<ul>
 		<!-- This area should display links to Assignments due in the next 7 days-->
-		<li>{% url 'noodle:show_material' as material_url %}</li>
-		<li>{% include 'noodle/paginator.html' with items=assignmentPages base_url=material_url %}</li>
+		<li>{% include 'noodle/paginator.html' with items=assignmentPages find_assignment=True %}</li>
 		</ul>
 		</div>
 		

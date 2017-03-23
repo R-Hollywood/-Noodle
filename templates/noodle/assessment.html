@@ -4,22 +4,35 @@
 {% load staticfiles %}
 
 	{% block title_block %}
-	<!-- unsure of actual django variable name? -->
-	{{assignment_name}}
+	{{assessment.material.name}}
 	{% endblock %}
 
 	{% block body_block %}
 	<section id="main" class="wrapper">
 	<header class="major">
-		<h1>{{assignment_name}} </h1>
+		<h1>{{assessment.material.name}} </h1>
 		<p />
 	</header>
 		<div id="frame">
-			<!--- This area should contain the information on the Assignments, Date Issued, Due Date and Current Submission Status along with the functionality to upload a submission-->
+			
+			Date Issued: {{assessment.material.datePosted}}
+			Deadline: {{ assessment.deadline }}
+			{% if assessment.user_submission.file %}
+				<!-- Download File-->
+				{% submission_string %}
+			{% else %}
+				You have not yet submitted a file!
+			{% endif %}
 		</div>
-		<button onclick="goBack()">Go Back</button>
-		<input type="submit" name="submit" value="Submit Assignment" />
-		<script src="{% static 'js/backButton.js' %}" /></script>
+		{% if not tier %}
+		<form id="AssessmentForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data">
+			{% csrf_token %}
+			{{ form.as_p }}
+		<input type="submit" name="submit" value="Add" />
+		</form>
+		{% elif tier %}
+		{% endif %}
+		<a href="{% url 'noodle:show_course' course.subject.slug course.slug %}">Back to Course</a>
 	</section>
 	
 	{% endblock %}
