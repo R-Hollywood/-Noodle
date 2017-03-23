@@ -1,0 +1,24 @@
+{% extends 'noodle/base.html' %}
+{% load staticfiles %}
+
+	{% block title_block %}
+		MyNoodle
+	{% endblock %}
+
+{% block body_block %}
+	<section id="main" class="wrapper">
+		<div id="menu2">
+			<div id="sidebar2">
+			MyNoodle
+			</div>
+			Username: {{user}}<br />
+			{{% if tier %}}
+			Status: {{status}}<br />
+			Subject: {{subject}}<br />
+			{{% else %}}
+			Year of Study: {{yearOfStudy}}<br />
+			Courses: {{enrolledIn}}<br />
+			{{% endif %}}
+		</div>
+	</section>
+{% endblock %}

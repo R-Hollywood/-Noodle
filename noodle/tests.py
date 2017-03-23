@@ -1,6 +1,15 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.contrib.staticfiles import finders
 from noodle.models import Staff
+from noodle.models import Student
+from noodle.models import User
+from noodle.models import Course
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+from noodle.models import UserProfile
+from noodle.models import Subject
+from noodle.models import Assessment
+from noodle.models import Material
 
 class SimpleTest(TestCase):
     def test_basic_addition(self):
@@ -24,6 +33,12 @@ class NoodleViewTestCase(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn('Welcome To Noodle', resp.content)
 
+class NoodleViewTestCase(TestCase):
+    def test_homepage(self):
+        resp = self.client.get('/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Welcome To Noodle', resp.content)
+
     def test_template(self):
         resp = self.client.get('/noodle/')
         self.assertEqual(resp.status_code, 200)
@@ -39,40 +54,51 @@ class NoodleViewTestCase(TestCase):
 
 class LoginViewTestCase(TestCase):
     def test_login(self):
-        resp = self.client.get('/accounts/login/')
+        resp = self.client.get('/noodle/login/')
         self.assertEqual(resp.status_code, 200)
 
 class RegisterViewTestCase(TestCase):
     def test_register(self):
-        resp = self.client.get('/accounts/register/')
+        resp = self.client.get('/noodle/register/')
         self.assertEqual(resp.status_code, 200)
 
 class teachHomeViewTestCase(TestCase):
     def test_teachhome(self):
-        resp = self.client.get('/teachhome/')
+        resp = self.client.post('/noodle/teachhome/',follow=True)
         self.assertEqual(resp.status_code, 200)
 
 class teachHomeAdd_assessmentViewTestCase(TestCase):
     def test_add_assessment(self):
-        resp = self.client.get('/teachhome/add_assessment/')
+        resp = self.client.post('/noodle/teachhome/add_assessment/',follow=True)
         self.assertEqual(resp.status_code, 200)
 
 class studenthHomeViewTestCase(TestCase):
     def test_studenthome(self):
-        resp = self.client.get('/studenthome/')
+        resp = self.client.get('/noodle/studenthome/')
         self.assertEqual(resp.status_code, 200)
 
 class studentHomeAdd_assessmentViewTestCase(TestCase):
     def test_add_asessment(self):
-        resp = self.client.get('/studenthome/add_assessment/')
+        resp = self.client.get('/noodle/studenthome/add_assessment/')
         self.assertEqual(resp.status_code, 200)
 
 class logoutViewTestCase(TestCase):
     def test_logout(self):
-        resp = self.client.get('/accounts/logout/')
+        resp = self.client.get('/noodle/logout/')
         self.assertEqual(resp.status_code, 200)
 
-class ModelsTest(TestCase):
+class registerStudentTestCase(TestCase):
+    def test_register_student(self):
+        resp = self.client.get('/noodle/register/student')
+
+
+class registerStaffTestCase(TestCase):
+    def test_register_staff(self):
+        resp = self.client.get('/noodle/register/staff')
+
+
+
+class PopulateTest(TestCase):
 
     def test_setUp(self):
         try:
@@ -86,10 +112,9 @@ class ModelsTest(TestCase):
             print('An error occured with populate() function')
 
     def get_subject(self, name):
-
         from noodle.models import Subject
         try:
-            subject = Subject.objects.get(name=name)
+            subject = Subject.objects.get_or_create(name=name)
         except Subject.DoesNotExist:
                 subject = None
         return subject
@@ -101,3 +126,19 @@ class ModelsTest(TestCase):
     def test_maths_added(self):
         subject = self.get_subject('Mathematics')
         self.assertIsNotNone(subject)
+
+class CourseTest(TestCase):
+
+    def test_Course(self):
+        course = Course(name = 'WAD2')
+        self.assertEqual(unicode(course), course.name)
+
+
+
+class RegisterViewTestCase(TestCase):
+    def test_register(self):
+        resp = self.client.get('/noodle/register/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Staff Register here!', resp.content)
+        self.assertIn('Students Register here!', resp.content)
+        self.assertIn('Registration', resp.content)
