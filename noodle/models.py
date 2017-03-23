@@ -3,11 +3,6 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 
 from django.db import models
-
-#as far as I can tell this functionality is encapsulated by File
-#please, whoever added this take a look at File
-#class Document(models.Model):
-    #docfile = models.FileField(upload_to='documents/%Y/%m/%d')
     
 class Admin(models.Model):
 	#name, password, email, forename and surname attributes are included with django's 'User' model
@@ -60,6 +55,7 @@ class Course(models.Model):
 
 	name = models.CharField(max_length = 128)
 	slug = models.SlugField(unique=True)
+	
 	subject = models.ForeignKey(Subject)
 	staffManagers = models.ManyToManyField(Staff, related_name = 'courses')
 	
@@ -95,7 +91,7 @@ class Student(models.Model):
 		return self.user.username
 		
 #used to track course page visits from students
-#basically allows a 'date' field in the the join table
+#effectively allows a 'date' field in a join table
 class VisitedCourse(models.Model):
 	date = models.DateTimeField()
 	
@@ -107,6 +103,18 @@ class VisitedCourse(models.Model):
 		
 	def __unicode__(self): 
 		return self.student.name + "/" + self.course.name + "/" + date
+		
+class staffVisitedCourse(models.Model):
+	date = models.DateTimeField()
+	
+	staff = models.ForeignKey(Staff, related_name='staffCourseVisit')
+	course = models.ForeignKey(Course, related_name='staffCourseVisit')
+	
+	def __str__(self): 
+		return self.staff.name + "/" + self.course.name + "/" + date
+		
+	def __unicode__(self): 
+		return self.staff.name + "/" + self.course.name + "/" + date
 
 class Material(models.Model):
 
@@ -156,10 +164,9 @@ class Assessment(models.Model):
 	slug = models.SlugField(unique=True)
 
 	deadline = models.DateTimeField()
-	submissionDate = models.DateTimeField()
 	
 	class Meta:
-		ordering = ['-submissionDate']
+		ordering = ['-deadline']
 	
 	def save(self, *args, **kwargs):
 		self.slug = self.material.slug
@@ -172,6 +179,7 @@ class Assessment(models.Model):
 		return self.material.name
 		
 class StudentSubmission(models.Model):
+	submissionDate = models.DateTimeField(null=True, blank=True)
 	file = models.FileField(upload_to='noodle/submissions/%Y/%m/%d', null = True)
 	student = models.ForeignKey(Student, related_name="user_submission")
 	assignment = models.ForeignKey(Assessment, related_name="user_submission")
@@ -189,7 +197,7 @@ class Announcement(models.Model):
 		ordering = ['-date']
 	
 	def save(self, *args, **kwargs):
-		self.slug = slugify(self.name)
+		self.slug = slugify(self.name + '_' + self.course.name)
 		super(Announcement, self).save(*args, **kwargs)
 	
 	def __str__(self):

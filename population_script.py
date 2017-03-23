@@ -128,8 +128,21 @@ def populate():
 		{'name': 'Operation Barbarossa', 
 		 'visibility': True, 
 		 'course': 'History2',
-		 'deadline': datetime.datetime(1942,06,22),
-		 'submissionDate': datetime.datetime(1945,05,8)}]
+		 'deadline': datetime.datetime(1942,06,22)},
+		{'name': 'The Future of Philosophy',
+		 'visibility': True,
+		 'course':'Philosophy2',
+		 'deadline': datetime.datetime(2050,1,1)},
+		{'name': 'Imaginary Numbers',
+		 'visibility': False,
+		 'course':'Mathematics2',
+		 'deadline': datetime.datetime(1526,1,20)},]
+		 
+	studentSubmissions = [
+		{'file': '<placeholder>',
+		 'submissionDate': datetime.datetime(1945,05,8),
+		 'student': 'developer',
+		 'course': 'History2'}]
 		 
 	announcements = [
 		{'name': "History2 Created!",
@@ -141,7 +154,7 @@ def populate():
 		 'date': datetime.datetime(1648, 10, 24),
 		 'course': 'Philosophy2'},
 		 {'name': "Mathematics2 Created!",
-		 'body': "History2 is here!",
+		 'body': "Many counting!",
 		 'date': datetime.datetime(1918, 11, 11),
 		 'course': 'Mathematics2'}]
 		 
@@ -170,6 +183,9 @@ def populate():
 							 student['fname'], student['sname']),
 					student['subject'], student['yearOfStudy'], 
 					Course.objects.filter(subject=Subject.objects.filter(name=student['subject'])))
+	developer = Student.objects.filter(user=User.objects.filter(username='developer'))[0]
+	developer.enrolledIn.add(Course.objects.filter(name='Philosophy2')[0])
+	developer.enrolledIn.add(Course.objects.filter(name='Mathematics2')[0])
 					
 	for visited_course in visited_courses:
 		student = Student.objects.filter(user = User.objects.filter(username=visited_course['student']))[0]
@@ -189,8 +205,7 @@ def populate():
 		subject = course.subject
 		staffCreator = Staff.objects.filter(subject=subject)[0]
 		add_assessment(add_material(assessment['name'], assessment['visibility'],
-									course, staffCreator), assessment['deadline'], 
-									assessment['submissionDate'])
+									course, staffCreator), assessment['deadline'])
 									
 	for announcement in announcements:
 		course = Course.objects.filter(name=announcement['course'])[0]
@@ -252,10 +267,9 @@ def add_file(material, datePosted):
 	f.save()
 	return f
 
-def add_assessment(material, deadline, submissionDate):
+def add_assessment(material, deadline):
 	return Assessment.objects.update_or_create(material = material, 
-					defaults={'deadline' : deadline, 
-							  'submissionDate' : submissionDate})[0]
+					defaults={'deadline' : deadline})[0]
 	
 def	add_announcement(course, name, body, date):
 	return Announcement.objects.update_or_create(

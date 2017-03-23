@@ -1,3 +1,10 @@
+NOTE: Sometimes when creating the migrations, it won't detect the 'noodle' app.
+In this case, you have to run 'makemigrations noodle'.
+
+---
+
+DEPENDENCIES:
+
 All the files required for the project to run.
 If you add a new dependency, please list it here.
 

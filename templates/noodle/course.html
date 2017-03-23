@@ -36,15 +36,42 @@
 			{% include 'noodle/paginator.html' with items=files %}
 			</ul>
 		</div>
-		{% if tier %}
-		<a href="{% url 'noodle:add_material' subject.slug course.slug %}">Add File/Assignment</a>
-		</br>
-		{% endif %}
 		{% else %}
 			<p> The requested course could not be found</p>
 			</br>
-			<!-- If user is admin/staff offer them the option to add the course -->
 		{% endif %}
+				
+		{% if tier %}
+		
+		<button id="visibilityButtonFile" type="button">Add File</button>
+		</br>
+		<form id="FileForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data" display=none>
+			{% csrf_token %}
+			{{ file_form.as_p }}
+		<input type="submit" name="submit" value="Add" />
+		</form>
+	
+		<script src={% static 'js/visibilityButton.js' %}></script>
+		<script>
+			visibilityButton("{{request.get_full_path}}", "visibilityButtonFile", "FileForm");
+		</script>
+	
+		<button id="visibilityButtonAssignment" type="button">Add Assignment</button>
+		</br>
+		<form id="AssignmentForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data" display=none>
+			{% csrf_token %}
+			{{ assignment_form.as_p }}
+		<input type="submit" name="submit" value="Add" />
+		</form>
+	
+		<script src={% static 'js/visibilityButton.js' %}></script>
+		<script>
+			visibilityButton("{{request.get_full_path}}", "visibilityButtonAssignment", "AssignmentForm");
+		</script>
+	
+		</br>
+		{% endif %}
+		
 		<a href="{% url 'noodle:show_subject' subject.slug %}">Back to Subject</a>
 	</section>
 {% endblock %}

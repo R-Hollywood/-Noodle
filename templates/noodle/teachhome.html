@@ -19,16 +19,33 @@
 			Options
 		</div>
 		<ul>
-			{% if tier == 2 %}
-				<li><a href="{% url 'noodle:add_subject' %}"> Add Subject</a></li>
-			{% endif %}
+		{% if tier == 2 %}
+			<button id="visibilityButton" type="button">Add Subject</button>
+			</br>
+			<form id="SubjectForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data">
+				{% csrf_token %}
+				{{ subject_form.as_p }}
+			<input type="submit" name="submit" value="Add" />
+			</form>
+	
+			<script src={% static 'js/visibilityButton.js' %}></script>
+			<script>
+				visibilityButton("{{request.get_full_path}}", "visibilityButton", "SubjectForm");
+			</script>
+	
+			</br>
+		{% endif %}
 		</ul>	
 		</div>
 	<div id="frame">
-		Subjects
+	
+		{% if not tier > 1 %}
+		<h2>My Courses</h2>
+			{% include 'noodle/paginator.html' with items=myCourses find_subject=True %}
+		{% endif %}
+		<h2>Subjects</h2>
 		{% include 'noodle/paginator.html' with items=subjects find_subject=True %}
-		</br>
-		Courses
+		<h2>Courses</h2>
 		{% include 'noodle/paginator.html' with items=courses find_course=True %}
 	</div>
 	<br />

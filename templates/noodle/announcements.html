@@ -2,6 +2,7 @@
 
 {% extends 'noodle/base.html' %}
 {% load staticfiles %}
+<script src="{% static 'js/jquery-3.2.0.min.js' %}"></script>
 
 {% block title_block %}
 {% endblock %}
@@ -14,12 +15,40 @@
 			<p />
 		</header>
 		
-		{% include 'noodle/paginator.html' with items=announcements %}
-		<!--Please order these in descending order of date-->
-	{% else %}
-		The announcements page could not be found!
-	{% endif %}
-	</br>
-	<a href="{% url 'noodle:show_course' course.subject.slug course.slug %}">Back to Course Announcements</a>
+		<div id="menu2">
+		<div id="sidebar2">
+			<h2>Announcements</h2>
+		</div>
+	
+		<ul>
+			{% include 'noodle/paginator.html' with items=announcements %}
+		</ul>
+		</div>
+		
+		
+		{% else %}
+			The announcements page could not be found!
+		{% endif %}
+		</br>
+		
+		{% if tier %}
+	
+		<button id="visibilityButton" type="button">Add Announcement</button>
+		</br>
+		<form id="AnnouncementForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data">
+			{% csrf_token %}
+			{{ announcement_form.as_p }}
+		<input type="submit" name="submit" value="Add" />
+		</form>
+	
+		<script src={% static 'js/visibilityButton.js' %}></script>
+		<script>
+			visibilityButton("{{request.get_full_path}}", "visibilityButton", "AnnouncementForm");
+		</script>
+	
+		</br>
+		{% endif %}
+		
+		<a href="{% url 'noodle:show_course' course.subject.slug course.slug %}">Back to Course</a>
 {% endblock %}
 

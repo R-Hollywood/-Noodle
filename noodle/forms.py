@@ -1,22 +1,35 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
+from datetime import datetime
 from noodle.models import *
 
 class SubjectForm(forms.ModelForm):
 	name = forms.CharField(max_length=128, help_text="Please enter the subject name")
 	slug = forms.CharField(widget=forms.HiddenInput(), required=False)
 
+	def clean(self):
+		name = self.cleaned_data.get('name')
+		
+		if(Subject.objects.filter(slug=slugify(name))):
+			raise forms.ValidationError("A subject with that name already exists!")
+	
 	class Meta:
 		model = Subject
 		fields = ('name',)
 
 class CourseForm(forms.ModelForm):
 	name = forms.CharField(max_length=128, help_text="Please enter the course name")
-	slug = forms.CharField(widget=forms.HiddenInput(), required=False)
+	
+	def clean(self):
+		name = self.cleaned_data.get('name')
+		
+		if(Course.objects.filter(slug=slugify(name))):
+			raise forms.ValidationError("A course with that name already exists!")
 	
 	class Meta:
 		model = Course
-		exclude = ('subject', 'staffManagers',)
+		fields = ('name',)
 
 class MaterialForm(forms.ModelForm):
 	name = forms.CharField(max_length=128, help_text="Please enter the material title")
@@ -37,10 +50,31 @@ class AssessmentForm(forms.ModelForm):
 
 	class Meta:
 		model = Assessment
-		fields = ('deadline', 'submissionDate',)
+		fields = ('deadline',)
+		
+class AnnouncementForm(forms.ModelForm):
 
+	courseName = None
+		
+	name = forms.CharField(max_length=128, help_text="Please enter the announcement name")
+	body = forms.CharField(widget=forms.Textarea(attrs={'rows': '5'}))
+		
+	def __init__(self, *args, **kwargs):
+		self.courseName = kwargs.pop('courseName')
+		super(AnnouncementForm, self).__init__(*args, **kwargs)
+	
+	def clean(self):
+		name = self.cleaned_data.get('name')
+		
+		if(Announcement.objects.filter(slug=slugify(name + '_' + self.courseName))):
+			raise forms.ValidationError("An announcement with that name already exists!")
+		
+	class Meta:
+		model = Announcement
+		fields = ('name', 'body',)
 		
 class UserForm(forms.ModelForm):
+
 	password = forms.CharField(widget=forms.PasswordInput())
 	confirm_password = forms.CharField(widget=forms.PasswordInput())
 	

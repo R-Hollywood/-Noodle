@@ -11,8 +11,6 @@ urlpatterns= [ url(r'^$',views.home, name='homepage'),
     url(r'studenthome/',views.studenthome, name='studenthome'),
     url(r'teachhome/',views.teachhome, name='teachhome'),
 	url(r'^pager_debug/$',views.test_pagination,name='pager_debug'),
-	url(r'teachhome/add_subject/',views.add_subject, name='add_subject'),
-	url(r'^(?P<subject_name_slug>[\w\-]+)/add_course/$',views.add_course, name='add_course'),
 	url(r'^(?P<subject_name_slug>[\w\-]+)/(?P<course_name_slug>[\w\-]+)/add_material/$',views.add_material, name='add_material'),
 	
 	url(r'^(?P<subject_name_slug>[\w\-]+)/$', 

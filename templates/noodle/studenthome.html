@@ -17,10 +17,11 @@
 	</header>
 	<div id="frame">
 		
-		Subjects
+		<h2>My Courses</h2>
+		{% include 'noodle/paginator.html' with items=myCourses find_subject=True %}
+		<h2>Subjects</h2>
 		{% include 'noodle/paginator.html' with items=subjects find_subject=True %}
-		</br>
-		Courses
+		<h2>Courses</h2>
 		{% include 'noodle/paginator.html' with items=courses find_course=True %}
 		
 	</div>

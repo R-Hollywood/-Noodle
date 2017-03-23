@@ -45,14 +45,29 @@ def home(request):
 @login_required
 def teachhome(request):
 	context_dict = {}
+	if(hasattr(request.user, 'staff')):
+		context_dict['myCourses'] = pager(request, Course.objects.filter(staffManagers__in=[request.user.staff]), 10)
 	context_dict['subjects'] = pager(request, Subject.objects.all(), 10)
 	context_dict['courses'] = pager(request, Course.objects.all(), 10)
 	context_dict['recentFiles'] = (File.objects.all())[:5]
+
+	form = SubjectForm()
+	if request.method == 'POST':
+		form = SubjectForm(request.POST)
+		if form.is_valid():
+			form.save()
+			request.method = 'GET'
+			return teachhome(request)
+		else:
+			print(form.errors)
+	context_dict['subject_form'] = form
+	
 	return render(request,'noodle/teachhome.html', context_dict)
 	
 @login_required
 def studenthome(request):
 	context_dict = {}
+	context_dict['myCourses'] = pager(request, Course.objects.filter(enrolledStudents__in=[request.user.student]), 10)
 	context_dict['subjects'] = pager(request, Subject.objects.all(), 10)
 	context_dict['courses'] = pager(request, Course.objects.all(), 10)
 	recentCourses = VisitedCourse.objects.all()[:5]
@@ -70,9 +85,27 @@ def show_subject(request, subject_name_slug):
 		courses = Course.objects.filter(subject=subject)
 		context_dict['courses'] = pager(request, courses, 10)
 		context_dict['subject'] = subject
+		
+		form = CourseForm()
+		if request.method == 'POST':
+			form = CourseForm(request.POST)
+			if form.is_valid():
+				if subject:
+					course = form.save(commit=False)
+					course.subject = subject
+					if(hasattr(request.user, 'staff')):
+						course.staffManagers.add(request.user.staff)
+					course.save()
+					request.method = 'GET'
+					return show_subject(request, subject_name_slug)
+			else:
+				print(form.errors)
+		context_dict['course_form'] = form
+				
 	except Subject.DoesNotExist:
 		context_dict['subject'] = None
 		context_dict['course'] = None
+		
 	return render(request, 'noodle/subject.html', context_dict)
 	
 @login_required	
@@ -107,9 +140,27 @@ def show_announcements(request, subject_name_slug, course_name_slug):
 		announcements = Announcement.objects.filter(course=course)
 		context_dict['course'] = course
 		context_dict['announcements'] = pager(request, announcements, 10)
+		
+		form = AnnouncementForm(courseName=course.name)
+		if request.method == 'POST':
+			form = AnnouncementForm(request.POST, courseName=course.name)
+			if form.is_valid():
+				if(course):
+					announcement = form.save(commit=False)
+					announcement.date = datetime.now()
+					announcement.course = course
+					announcement.save()
+					request.method = 'GET'
+					return show_announcements(request, subject_name_slug, course_name_slug)
+			else:
+				print(form.errors)
+		context_dict['announcement_form'] = form
+		
+		
 	except Course.DoesNotExist:
 		context_dict['announcements'] = None
 		context_dict['course'] = None
+	print context_dict
 	return render(request, 'noodle/announcements.html', context_dict)
 	
 @login_required
@@ -164,43 +215,6 @@ def add_material(request):
 			
 	context_dict = {'form': form, 'file_form': fileForm, 'assignment_form': assignmentForm}
 	return render(request, 'noodle/add_material.html', context_dict)
-	
-@login_required	
-def add_subject(request):
-	form = SubjectForm()
-	if request.method == 'POST':
-		form = SubjectForm(request.POST)
-		if form.is_valid():
-			sub = form.save(commit=True)
-			print(sub, sub.slug)
-			return index(request)
-		else:
-			print(form.errors)
-	
-	return render(request, 'noodle/add_subject.html', {'form': form})
-
-@login_required
-def add_course(request, subject_name_slug):
-    try:
-        course =  Course.objects.get(slug=subject_name_slug)
-    except Course.DoesNotExist:
-        course = None
-    
-    form = CourseForm()
-    if request.method == 'POST':
-        form = CourseForm(request.POST)
-        if form.is_valid():
-            if subject:
-                course = form.save(commit=False)
-                course.category = category
-                course.views = 0
-                course.save()
-                return show_subject(request, subject_name_slug)
-        else:
-            print(form.errors)
-    
-    context_dict = {'form':form, 'subject': subject}
-    return render(request, 'noodle/add_course.html', context_dict)
 
 def register(request):
 	return render(request, 'noodle/register.html', {'registered':False})

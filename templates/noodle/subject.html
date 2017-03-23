@@ -25,14 +25,28 @@
 			{% include 'noodle/paginator.html' with items=courses %}
 		</ul>
 		</div>
-		</section>
-		{% if tier %}
-			<a href="{% url 'noodle:add_course' subject.slug %}"> Add Course</a>
+		{% else %}
+			<p> The requested subject could not be found</p>
 		{% endif %}
-
-	{% else %}
-		<p> The requested subject could not be found</p>
-	{% endif %}
-</br>
+		
+		{% if tier %}
+	
+		<button id="visibilityButton" type="button">Add Course</button>
+		</br>
+		<form id="CourseForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data" display=none>
+			{% csrf_token %}
+			{{ course_form.as_p }}
+		<input type="submit" name="submit" value="Add" />
+		</form>
+	
+		<script src={% static 'js/visibilityButton.js' %}></script>
+		<script>
+			visibilityButton("{{request.get_full_path}}", "visibilityButton", "CourseForm");
+		</script>
+	
+		{% endif %}
+		</br>
+		<a href="{% url 'noodle:homepage' %}">Back to Home</a>
+	</section>
 {% endblock %}
 
