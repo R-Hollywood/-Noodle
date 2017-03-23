@@ -15,22 +15,14 @@
 		<h1> Welcome {{user}} </h1>
 		<p />
 	</header>
-	<div id="frame">
-		<h2>My Courses</h2>
-		{% include 'noodle/paginator.html' with items=myCourses find_course=True %}
-		<h2>Subjects</h2>
-		{% include 'noodle/paginator.html' with items=subjects find_subject=True %}
-		<h2>Courses</h2>
-		{% include 'noodle/paginator.html' with items=courses find_course=True %}
-		
-	</div>
+		<div>
 		<div id="menu">
 		<div id="sidebar">
 			Recently Viewed
 		</div>
 		<ul>
 			{% for recentCourse in recentCourses %}
-				<a href="{% url 'noodle:show_course' recentCourse.subject.slug recentCourse.slug %}">{{ recentCourse }}</a>
+				<li><a href="{% url 'noodle:show_course' recentCourse.subject.slug recentCourse.slug %}">{{ recentCourse }}</a></li>
 			{% endfor %}
 		<ul>
 		
@@ -46,9 +38,20 @@
 		<li>{% include 'noodle/paginator.html' with items=assignmentPages find_assignment=True %}</li>
 		</ul>
 		</div>
+		<div id="frameStu">
+		<div id="sidebar">
+		<h2>My Courses</h2>
+		</div>
+		{% include 'noodle/paginator.html' with items=myCourses find_subject=True %}
+		<div id="sidebar">
+		<h2>Subjects</h2>
+		</div>
+		{% include 'noodle/paginator.html' with items=subjects find_subject=True %}
+		
 		
 	</div>
-	
+	</div>
+	</div>
 	
 	</section>
 {% endblock %}

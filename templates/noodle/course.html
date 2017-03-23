@@ -16,8 +16,9 @@
 			<h1> {{ course }} </h1>
 			<p />
 		</header>
-		<a href="{{request.get_full_path}}announcements/">Announcements</a>
-			
+		
+		<button><a href="{{request.get_full_path}}announcements/">Announcements</a></button>
+		
 		</br>
 		<div id="menu2">
 		<div id="sidebar2">
@@ -79,7 +80,9 @@
 		</br>
 		{% endif %}
 		
-		<a href="{% url 'noodle:show_subject' subject.slug %}">Back to Subject</a>
+		
+		<button><a href="{% url 'noodle:show_subject' subject.slug %}">Back to Subject</a></button>
+		
 	</section>
 {% endblock %}
 

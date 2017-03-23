@@ -69,7 +69,7 @@ class AssignmentForm(forms.ModelForm):
 class StudentSubmissionForm(forms.ModelForm):
 	
 	class Meta:
-		model = File
+		model = StudentSubmission
 		fields = ('file',)
 		
 class AnnouncementForm(forms.ModelForm):

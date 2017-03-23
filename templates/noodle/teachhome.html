@@ -12,12 +12,13 @@
 		<p />
 	</header>
 		
+		{% if tier == 2 %}
 		<div id="menu">
 		<div id="sidebar">
 			Options
 		</div>
 		<ul>
-		{% if tier == 2 %}
+		
 			<button id="visibilityButton" type="button">Add Subject</button>
 			</br>
 			<form id="SubjectForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data">
@@ -30,23 +31,12 @@
 			<script>
 				visibilityButton("{{request.get_full_path}}", "visibilityButton", "SubjectForm");
 			</script>
-	
+			
 			</br>
 		{% endif %}
 		</ul>	
 		</div>
-	<div id="frame">
-		{% if not tier > 1 %}
-		<h2>My Courses</h2>
-			{% include 'noodle/paginator.html' with items=myCourses find_subject=True %}
-		{% endif %}
-		<h2>Subjects</h2>
-		{% include 'noodle/paginator.html' with items=subjects find_subject=True %}
-		<h2>Courses</h2>
-		{% include 'noodle/paginator.html' with items=courses find_course=True %}
-	</div>
-	<br />
-	<br />
+		<br />
 		<div id="menu">
 		<div id="sidebar">
 			Recently Added.
@@ -57,6 +47,23 @@
 		{% endfor %}
 		
 	</div>
+	<div id="frameSta">
+		{% if not tier > 1 %}
+		<div id="sidebar">
+		<h2>My Courses</h2>
+		</div>
+			{% include 'noodle/paginator.html' with items=myCourses find_subject=True %}
+		{% endif %}
+		<div id="sidebar">
+		<h2>Subjects</h2>
+		</div>
+		{% include 'noodle/paginator.html' with items=subjects find_subject=True %}
+		
+		
+	</div>
+	<br />
+	<br />
+		
 	
 	</section>
 	{% endblock %}

@@ -8,6 +8,8 @@
 
 {% block page_block %}
 	{% for item in items %}
+	<ul>
+	<br />
 		{% if find_course %}
 			<li><a href="{% url 'noodle:show_course' item.subject.slug item.slug %}">{{ item.name }}</a></li>
 		{% elif find_subject %}
@@ -21,7 +23,8 @@
 		{% else %}
 			<li><a href="{{request.get_full_path}}{{item.slug}}/">{{ item.name }}</a></li>
 		{% endif %}
-		</br>
+	</ul>
+		
 	{% endfor %}
 	
 	<div class ="pagination">
