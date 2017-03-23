@@ -7,6 +7,7 @@
 
 {% block body_block %}
 	<section id="main" class="wrapper">
+	<div id="center">
 		<div id="menu2">
 			<div id="sidebar2">
 			MyNoodle
@@ -20,5 +21,8 @@
 			Courses: {{enrolledIn}}<br />
 			{{% endif %}}
 		</div>
+	</div>
+	<button onclick="goBack()">Go Back</button>
+	<script src="{% static 'js/backButton.js' %}"></script>
 	</section>
 {% endblock %}
