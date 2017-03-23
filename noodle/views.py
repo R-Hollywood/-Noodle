@@ -47,8 +47,7 @@ def home(request):
 @login_required
 def teachhome(request):
 	context_dict = {}
-	if(hasattr(request.user, 'staff')):
-		context_dict['myCourses'] = pager(request, Course.objects.filter(staffManagers__in=[request.user.staff]), 10)
+	context_dict['myCourses'] = pager(request, Course.objects.filter(staffManagers__in=[request.user]), 10)
 	context_dict['subjects'] = pager(request, Subject.objects.all(), 10)
 	context_dict['courses'] = pager(request, Course.objects.all(), 10)
 	context_dict['recentFiles'] = (File.objects.all())[:5]
@@ -95,8 +94,7 @@ def show_subject(request, subject_name_slug):
 				if subject:
 					course = form.save(commit=False)
 					course.subject = subject
-					if(hasattr(request.user, 'staff')):
-						course.staffManagers.add(request.user.staff)
+					course.staffManagers.add(request.user)
 					course.save()
 					request.method = 'GET'
 					return show_subject(request, subject_name_slug)
@@ -120,6 +118,8 @@ def show_course(request, subject_name_slug, course_name_slug):
 		context_dict['subject'] = subject
 		context_dict['course'] = course
 		context_dict['material'] = material
+		context_dict['files'] = pager(request, Material.objects.filter(courseFrom=course, assessment=None), 10)
+		context_dict['assignments'] = pager(request, Material.objects.filter(courseFrom=course, file=None), 10)
 		
 		#update student's visited courses
 		user = request.user
@@ -127,6 +127,47 @@ def show_course(request, subject_name_slug, course_name_slug):
 			VisitedCourse.objects.update_or_create(
 							student = user.student, course = course, 
 							defaults={'date': datetime.now()})[0]
+							
+		form = MaterialForm(courseName=course.name)
+		fileForm = FileForm()
+		assignmentForm = AssignmentForm()
+	
+		if request.method == 'POST':
+			form = MaterialForm(data=request.POST, courseName=course.name)
+			fileForm = FileForm(request.POST, request.FILES)
+			assignmentForm = AssignmentForm(data=request.POST)
+		
+		if form.is_valid() and fileForm.is_valid():
+			ass = form.save(commit=False)
+			ass.datePosted = datetime.now()
+			ass.courseFrom = course
+			ass.createdBy = request.user
+			ass.save()
+			file = fileForm.save(commit=False)
+			file.material = ass
+			file.save()
+			print(ass, ass.slug)
+			request.method = 'GET'
+			return show_course(request, subject_name_slug, course_name_slug)
+			
+		elif form.is_valid() and assignmentForm.is_valid():
+			ass = form.save(commit=False)
+			ass.datePosted = datetime.now()
+			ass.courseFrom = course
+			ass.createdBy = request.user
+			ass.save()
+			assignment = assignmentForm.save(commit=False)
+			assignment.material = ass
+			assignment.save()
+			print(ass, ass.slug)
+			request.method = 'GET'
+			return show_course(request, subject_name_slug, course_name_slug)
+		else:
+			print(form.errors)
+		
+		context_dict['form'] = form
+		context_dict['file_form'] = fileForm
+		context_dict['assignment_form'] = assignmentForm
 							
 	except Course.DoesNotExist:
 		context_dict['subject'] = None
@@ -190,33 +231,6 @@ def show_assessment(request, course_name_slug, assessment_name_slug):
 		context_dict['assessment'] = None
 		context_dict['course'] = None
 	return render(request, 'noodle/assessment.html', context_dict)
-
-@login_required	
-def add_material(request):
-	form = MaterialForm()
-	fileForm = FileForm()
-	assignmentForm = AssignmentForm()
-	
-	if request.method == 'POST':
-		form = MaterialForm(request.POST)
-		fileForm = FileForm(request.POST, request.FILES)
-		assignmentForm = AssignmentForm(request.POST)
-		
-		if form.is_valid() and fileForm.is_valid():
-			ass = form.save(commit=True)
-			fileForm.save(commit=True)
-			print(ass, ass.slug)
-			return teachhome(request)
-		elif form.is_valid() and assignmentForm.is_valid():
-			ass = form.save(commit=True)
-			assignmentForm.save(commit=True)
-			print(ass, ass.slug)
-			return teachhome(request)
-		else:
-			print(form.errors)
-			
-	context_dict = {'form': form, 'file_form': fileForm, 'assignment_form': assignmentForm}
-	return render(request, 'noodle/add_material.html', context_dict)
 
 def register(request):
 	return render(request, 'noodle/register.html', {'registered':False})

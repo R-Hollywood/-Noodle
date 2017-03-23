@@ -43,10 +43,13 @@
 				
 		{% if tier %}
 		
+		<!--File Form-->
+		
 		<button id="visibilityButtonFile" type="button">Add File</button>
 		</br>
 		<form id="FileForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data" display=none>
 			{% csrf_token %}
+			{{ form.as_p }}
 			{{ file_form.as_p }}
 		<input type="submit" name="submit" value="Add" />
 		</form>
@@ -56,10 +59,13 @@
 			visibilityButton("{{request.get_full_path}}", "visibilityButtonFile", "FileForm");
 		</script>
 	
+		<!--Assignment Form-->
+	
 		<button id="visibilityButtonAssignment" type="button">Add Assignment</button>
 		</br>
 		<form id="AssignmentForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data" display=none>
 			{% csrf_token %}
+			{{ form.as_p }}
 			{{ assignment_form.as_p }}
 		<input type="submit" name="submit" value="Add" />
 		</form>

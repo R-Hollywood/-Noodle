@@ -118,25 +118,30 @@ def populate():
 		{'name': 'Independence Day', 
 		 'visibility': True, 
 		 'course': 'History2',
-		 'datePosted': datetime.datetime(1776,06,04)},
+		 'datePosted': datetime.datetime(1776,06,04),
+		 'file': '<placeholder>'},
 		{'name': 'Leviathan',
 		 'visibility': False,
 		 'course': 'Philosophy2',
-		 'datePosted': datetime.datetime(2017,02,24)}]
+		 'datePosted': datetime.datetime(2017,02,24),
+		 'file': '<placeholder>'}]
 	
 	assessments = [
 		{'name': 'Operation Barbarossa', 
 		 'visibility': True, 
 		 'course': 'History2',
-		 'deadline': datetime.datetime(1942,06,22)},
+		 'deadline': datetime.datetime(1942,06,22),
+		 'datePosted': datetime.datetime(1939,02,01)},
 		{'name': 'The Future of Philosophy',
 		 'visibility': True,
 		 'course':'Philosophy2',
-		 'deadline': datetime.datetime(2050,1,1)},
+		 'deadline': datetime.datetime(2050,01,01),
+		 'datePosted': datetime.datetime(2017,03,24)},
 		{'name': 'Imaginary Numbers',
 		 'visibility': False,
 		 'course':'Mathematics2',
-		 'deadline': datetime.datetime(1526,1,20)},]
+		 'deadline': datetime.datetime(1819,01,27),
+		 'datePosted': datetime.datetime(1526,01,20)}]
 		 
 	studentSubmissions = [
 		{'file': '<placeholder>',
@@ -175,8 +180,11 @@ def populate():
 		subject = Subject.objects.filter(name=course['subject'])[0]
 		#here we assume all staff members belonging to a course are managers
 		managers = Staff.objects.filter(subject=course['subject'])
+		managerList = []
+		for manager in managers:
+			managerList.append(manager.user)
 		add_course(course['name'], course['courseID'],
-					subject, managers)
+					subject, managerList)
 					
 	for student in students:
 		add_student(add_user(student['username'], student['email'], student['password'], 
@@ -196,16 +204,17 @@ def populate():
 		course = Course.objects.filter(name=file['course'])[0]
 		subject = course.subject
 		#here we just take the first staff member for any given subject
-		staffCreator = Staff.objects.filter(subject=subject)[0]
+		staffCreator = (Staff.objects.filter(subject=subject)[0]).user
 		add_file(add_material(file['name'], file['visibility'],
-					course, staffCreator), file['datePosted'])
+					course, staffCreator, file['datePosted']), file['file'])
 	
 	for assessment in assessments:
 		course = Course.objects.filter(name=assessment['course'])[0]
 		subject = course.subject
-		staffCreator = Staff.objects.filter(subject=subject)[0]
+		staffCreator = (Staff.objects.filter(subject=subject)[0]).user
 		add_assessment(add_material(assessment['name'], assessment['visibility'],
-									course, staffCreator), assessment['deadline'])
+									course, staffCreator, assessment['datePosted']), 
+									assessment['deadline'])
 									
 	for announcement in announcements:
 		course = Course.objects.filter(name=announcement['course'])[0]
@@ -257,13 +266,14 @@ def add_visitedcourse(date, student, course):
 	return VisitedCourse.objects.update_or_create(
 		student = student, course = course, defaults={'date': date})[0]
 
-def add_material(name, visibility, course, staffCreator):
+def add_material(name, visibility, course, staffCreator, datePosted):
 	return Material.objects.update_or_create(name = name, defaults={'visibility' : visibility, 
-										'courseFrom' : course, 'createdBy' : staffCreator})[0]
+										'courseFrom' : course, 'createdBy' : staffCreator, 
+										'datePosted':datePosted})[0]
 	
-def add_file(material, datePosted):
+def add_file(material, file):
 	f = File.objects.get_or_create(material = material)[0]
-	f.datePosted = datePosted
+	#f.file = file
 	f.save()
 	return f
 

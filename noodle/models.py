@@ -57,7 +57,7 @@ class Course(models.Model):
 	slug = models.SlugField(unique=True)
 	
 	subject = models.ForeignKey(Subject)
-	staffManagers = models.ManyToManyField(Staff, related_name = 'courses')
+	staffManagers = models.ManyToManyField(User, related_name = 'courses')
 	
 	class Meta:
 		ordering = ['name']
@@ -70,8 +70,7 @@ class Course(models.Model):
 		return self.name
 		
 	def __unicode__(self): 
-		return self.name
-		
+		return self.name	
 		
 class Student(models.Model):
 
@@ -121,12 +120,13 @@ class Material(models.Model):
 	name = models.CharField(max_length = 128)
 	visibility = models.BooleanField()
 	slug = models.SlugField(unique=True)
+	datePosted = models.DateTimeField(default=None, null=True)
 	
 	courseFrom = models.ForeignKey(Course, related_name = 'material')
-	createdBy = models.ForeignKey(Staff, related_name = 'createdMaterial', null = False)
+	createdBy = models.ForeignKey(User, related_name = 'createdMaterial', null = False)
 
 	def save(self, *args, **kwargs):
-		self.slug = slugify(self.name)
+		self.slug = slugify(self.name + '_' + self.courseFrom.name)
 		super(Material, self).save(*args, **kwargs)
 		
 	def __str__(self): 
@@ -138,13 +138,12 @@ class Material(models.Model):
 class File(models.Model):
 	
 	material = models.OneToOneField(Material, unique = True)
-	file = models.FileField(upload_to='noodle/uploads/%Y/%m/%d', null = True)
+	file = models.FileField(upload_to='noodle/uploads/%Y/%m/%d')
 	#so paginator can access slug directly
 	slug = models.SlugField(unique=True)
-	datePosted = models.DateTimeField(default=None, null=True)
 	
 	class Meta:
-		ordering = ['datePosted']
+		ordering = ['material__datePosted']
 	
 	def save(self, *args, **kwargs):
 		self.slug = self.material.slug

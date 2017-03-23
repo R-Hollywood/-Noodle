@@ -1,8 +1,6 @@
 {% extends 'noodle/base.html' %}
 {% load staticfiles %}
 
-
-
 	{% block title_block %}
 		Staff Home
 	{% endblock %}
@@ -38,7 +36,6 @@
 		</ul>	
 		</div>
 	<div id="frame">
-	
 		{% if not tier > 1 %}
 		<h2>My Courses</h2>
 			{% include 'noodle/paginator.html' with items=myCourses find_subject=True %}

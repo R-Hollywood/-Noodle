@@ -32,13 +32,25 @@ class CourseForm(forms.ModelForm):
 		fields = ('name',)
 
 class MaterialForm(forms.ModelForm):
+	courseName = None
+
 	name = forms.CharField(max_length=128, help_text="Please enter the material title")
 	slug = forms.CharField(widget=forms.HiddenInput(), required=False)
-	visibility = forms.BooleanField(help_text="Please set visibility")
+	visibility = forms.BooleanField(help_text="Please set visibility", initial=True)
 	
+	def __init__(self, *args, **kwargs):
+		self.courseName = kwargs.pop('courseName')
+		super(MaterialForm, self).__init__(*args, **kwargs)
+		
+	def clean(self):
+		name = self.cleaned_data.get('name')
+		
+		if(Material.objects.filter(slug=slugify(name + '_' + self.courseName))):
+			raise forms.ValidationError("Material with that name already exists!")
+			
 	class Meta:
 		model = Material
-		exclude = ('courseFrom', 'createdBy',)
+		exclude = ('courseFrom', 'createdBy', 'datePosted')
 		
 class FileForm(forms.ModelForm):
 	
@@ -46,8 +58,10 @@ class FileForm(forms.ModelForm):
 		model = File
 		fields = ('file',)
 
-class AssessmentForm(forms.ModelForm):
+class AssignmentForm(forms.ModelForm):
 
+	deadline = forms.SplitDateTimeField(input_date_formats=['%Y-%m-%d'], input_time_formats=['%H:%M:%S'], help_text="(format: 'YYYY-MM-DD HH:MM:SS')")
+		
 	class Meta:
 		model = Assessment
 		fields = ('deadline',)
