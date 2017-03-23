@@ -16,22 +16,26 @@
 		<div id="frame">
 			
 			Date Issued: {{assessment.material.datePosted}}
+			</br>
 			Deadline: {{ assessment.deadline }}
+			</br>
 			{% if assessment.user_submission.file %}
 				<!-- Download File-->
-				{% submission_string %}
+				{{ submission_string }}
 			{% else %}
 				You have not yet submitted a file!
 			{% endif %}
-		</div>
+			</br>
 		{% if not tier %}
-		<form id="AssessmentForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data">
-			{% csrf_token %}
-			{{ form.as_p }}
-		<input type="submit" name="submit" value="Add" />
-		</form>
+			<form id="AssessmentForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data">
+				{% csrf_token %}
+				{{ form.as_p }}
+			<input type="submit" name="submit" value="Add" />
+			</form>
 		{% elif tier %}
 		{% endif %}
+		</div>
+
 		<a href="{% url 'noodle:show_course' course.subject.slug course.slug %}">Back to Course</a>
 	</section>
 	
