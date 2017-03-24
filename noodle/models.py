@@ -97,6 +97,9 @@ class VisitedCourse(models.Model):
 	student = models.ForeignKey(Student, related_name='courseVisit')
 	course = models.ForeignKey(Course, related_name='courseVisit')
 	
+	class Meta:
+		ordering = ['-date']
+	
 	def __str__(self): 
 		return self.student.name + "/" + self.course.name + "/" + date
 		
@@ -109,6 +112,9 @@ class StaffVisitedCourse(models.Model):
 	staff = models.ForeignKey(Staff, related_name='staffCourseVisit')
 	course = models.ForeignKey(Course, related_name='staffCourseVisit')
 	
+	class Meta:
+		ordering = ['-date']
+		
 	def __str__(self): 
 		return self.staff.name + "/" + self.course.name + "/" + date
 		

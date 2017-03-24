@@ -19,25 +19,7 @@
 		
 	{% endfor %}
 	
-	<div class ="pagination">
-		<span class="links">
-			{% if items.has_previous %}
-				<a href="?page={{ items.previous_page_number }}">Previous</a>
-			{% endif %}
-			
-			{{ items.page_range }}
-			
-			{% for pNo in items.page_range %}
-				{% if pNo == items.number %}
-					<b><a href="?page={{ pNo }}">pNo</a></b>
-				{% else %}
-					<a href="?page={{ pNo }}">pNo</a>
-				{% endif %}
-			{% endfor %}
-			
-			{% if items.has_next %}
-				<a href="?page={{ items.next_page_number }}">Next</a>
-			{% endif %}
+	{% include 'noodle/paginatorCore.html' with items=items %}
 	
 {% endblock %}
 

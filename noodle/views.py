@@ -14,7 +14,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime
 from datetime import timedelta
-from noodle.webhose_search import run_query
 from noodle.webhose_search import query1
 import pytz
 
@@ -64,7 +63,8 @@ def myNoodle(request):
 def teachhome(request):
 
 	context_dict = {}
-	context_dict['myCourses'] = pager(request, Course.objects.filter(staffManagers__in=[request.user]), 10)
+	myCourses = Course.objects.filter(staffManagers__in=[request.user])
+	context_dict['myCourses'] = pager(request, myCourses, 10)
 	context_dict['subjects'] = pager(request, Subject.objects.all(), 10)
 	context_dict['courses'] = pager(request, Course.objects.all(), 10)
 	context_dict['recentFiles'] = (Doc.objects.all())[:5]
@@ -80,6 +80,33 @@ def teachhome(request):
 			print(form.errors)
 	context_dict['subject_form'] = form
 	
+	#my courses subscription handler
+	context_dict['subscriptions'] = []
+	
+	user = request.user
+		
+	if(user.is_authenticated() and hasattr(user, 'staff') and user.staff != None):
+		
+		for course in myCourses:
+		
+			announcementTime = False
+			announcement = Announcement.objects.filter(course=course)
+			
+			if(announcement):
+				announcementTime = (announcement[0]).date
+		
+			visitTime = False
+			visit =	StaffVisitedCourse.objects.filter(staff=request.user.staff, course=course)
+			if(visit):
+				visitTime = (visit[0]).date
+			
+			if(announcementTime and visitTime and announcementTime >= visitTime):
+				context_dict['subscriptions'].append([True, course])
+			else:
+				context_dict['subscriptions'].append([False, course])
+		
+	context_dict['subscriptions'] = pager(request, context_dict['subscriptions'], 10)
+	
 	return render(request,'noodle/teachhome.html', context_dict)
 	
 @login_required
@@ -93,13 +120,15 @@ def studenthome(request):
 	
 	recentCourses = VisitedCourse.objects.filter(student = request.user.student)[:5]
 	
+	#recent courses
 	context_dict['recentCourses'] = []
 	for recentCourse in recentCourses:
 		(context_dict['recentCourses']).append(recentCourse.course)
-		
+	
+	#upcoming assignments
 	myAssignments = []
 	for course in myCourses:
-		materials=Material.objects.filter(courseFrom=course)
+		materials=Material.objects.filter(courseFrom=course, visibility=True)
 		for material in materials:
 			assessment = Assessment.objects.filter(material=material)
 			if(assessment.exists()):
@@ -112,6 +141,28 @@ def studenthome(request):
 			context_dict['myAssignments'].append(assignment)
 	context_dict['myAssignments'] = pager(request, context_dict['myAssignments'], 10)
 	
+	#my courses subscription handler
+	context_dict['subscriptions'] = []
+		
+	for course in myCourses:
+		
+		announcementTime = False
+		announcement = Announcement.objects.filter(course=course)
+		if(announcement):
+			announcementTime = (announcement[0]).date
+		
+		visitTime = False
+		visit =	VisitedCourse.objects.filter(student=request.user.student, course=course)
+		if(visit):
+			visitTime = (visit[0]).date
+			
+		if(announcementTime and visitTime and announcementTime >= visitTime):
+			context_dict['subscriptions'].append([True, course])
+		else:
+			context_dict['subscriptions'].append([False, course])
+		
+	context_dict['subscriptions'] = pager(request, context_dict['subscriptions'], 10)
+		
 	return render(request,'noodle/studenthome.html', context_dict)
 	
 @login_required	
@@ -132,6 +183,10 @@ def show_subject(request, subject_name_slug):
 					course.subject = subject
 					course.save()
 					course.staffManagers.add(request.user)
+					course.save()
+					students = Student.objects.filter(subject=subject)
+					for student in students:
+						course.enrolledStudents.add(student)
 					course.save()
 					request.method = 'GET'
 					return show_subject(request, subject_name_slug)

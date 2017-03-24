@@ -6,38 +6,17 @@
 	and for each item in items to have both a name and a slug-->
 
 {% block page_block %}
-	{% for materialS in material %}
-	<ul>
-		
-	<br />
-		{% if materialS.materialFile.file %}
-			{% if materialS.visibility or tier %}
-				<li><a href="{{ materialS.materialFile.file.url }}">{{ materialS.name }}</a></li>
-			{% endif %}
+	{% for item in items %}
+		{% if item.0 %}
+			<b><a href="{% url 'noodle:show_course' item.1.subject.slug item.1.slug %}">{{ item.1.name }}</a></b>
+			<br />
+		{% else %}
+			<a href="{% url 'noodle:show_course' item.1.subject.slug item.1.slug %}">{{ item.1.name }}</a>
+			<br />
 		{% endif %}
-	</ul>
-		
 	{% endfor %}
 	
-	<div class ="pagination">
-		<span class="links">
-			{% if items.has_previous %}
-				<a href="?page={{ items.previous_page_number }}">Previous</a>
-			{% endif %}
-			
-			{{ items.page_range }}
-			
-			{% for pNo in items.page_range %}
-				{% if pNo == items.number %}
-					<b><a href="?page={{ pNo }}">pNo</a></b>
-				{% else %}
-					<a href="?page={{ pNo }}">pNo</a>
-				{% endif %}
-			{% endfor %}
-			
-			{% if items.has_next %}
-				<a href="?page={{ items.next_page_number }}">Next</a>
-			{% endif %}
+	{% include 'noodle/paginatorCore.html' with items=items.1 %}
 	
 {% endblock %}
 
