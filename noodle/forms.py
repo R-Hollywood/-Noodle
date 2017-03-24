@@ -167,8 +167,6 @@ class MarkingForm(forms.ModelForm):
 	
 		if(student != ''):
 			self.fields['studentName'].initial = student
-		print "Markform"
-		print Student
 		
 	class Meta:
 		model = StudentSubmission

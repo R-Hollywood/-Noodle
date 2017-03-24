@@ -141,7 +141,7 @@ def populate():
 		 'visibility': True, 
 		 'course': 'History2',
 		 'deadline': datetime.datetime(1942,6,22),
-		 'datePosted': datetime.datetime(1939,2,01)},
+		 'datePosted': datetime.datetime(1939,2,1)},
 		{'name': 'The Future of Philosophy',
 		 'visibility': True,
 		 'course':'Philosophy2',
