@@ -405,7 +405,7 @@ def user_login(request):
 		password = request.POST.get('password')
 		user = authenticate(username=username, password=password)
 		if(request.user):
-			if(user.is_active()):
+			if(request.user.is_active()):
 				login(request, user)
 				return HttpResponseRedirect(reverse('homepage'))
 			else:
