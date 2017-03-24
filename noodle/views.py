@@ -64,9 +64,9 @@ def teachhome(request):
 	context_dict['recentFiles'] = (File.objects.all())[:5]
 
 	form = SubjectForm()
-	if request.method == 'POST':
+	if(request.method == 'POST'):
 		form = SubjectForm(request.POST)
-		if form.is_valid():
+		if(form.is_valid()):
 			form.save()
 			request.method = 'GET'
 			return teachhome(request)
@@ -100,10 +100,10 @@ def show_subject(request, subject_name_slug):
 		context_dict['subject'] = subject
 		
 		form = CourseForm()
-		if request.method == 'POST':
+		if(request.method == 'POST'):
 			form = CourseForm(request.POST)
-			if form.is_valid():
-				if subject:
+			if(form.is_valid()):
+				if(subject):
 					course = form.save(commit=False)
 					course.subject = subject
 					course.save()
@@ -141,12 +141,12 @@ def show_course(request, subject_name_slug, course_name_slug):
 		fileForm = FileForm()
 		assignmentForm = AssignmentForm()
 	
-		if request.method == 'POST':
+		if(request.method == 'POST'):
 			form = MaterialForm(data=request.POST, courseName=course.name)
 			fileForm = FileForm(request.POST, request.FILES)
 			assignmentForm = AssignmentForm(data=request.POST)
 		
-			if form.is_valid() and fileForm.is_valid():
+			if(form.is_valid() and fileForm.is_valid()):
 				ass = form.save(commit=False)
 				ass.datePosted = datetime.now()
 				ass.courseFrom = course
@@ -159,7 +159,7 @@ def show_course(request, subject_name_slug, course_name_slug):
 				request.method = 'GET'
 				return show_course(request, subject_name_slug, course_name_slug)
 			
-			elif form.is_valid() and assignmentForm.is_valid():
+			elif(form.is_valid() and assignmentForm.is_valid()):
 				ass = form.save(commit=False)
 				ass.datePosted = datetime.now()
 				ass.courseFrom = course
@@ -196,9 +196,9 @@ def show_announcements(request, subject_name_slug, course_name_slug):
 		visitUpdater(request, course)
 		
 		form = AnnouncementForm(courseName=course.name)
-		if request.method == 'POST':
+		if(request.method == 'POST'):
 			form = AnnouncementForm(request.POST, courseName=course.name)
-			if form.is_valid():
+			if(form.is_valid()):
 				if(course):
 					announcement = form.save(commit=False)
 					announcement.date = datetime.now()
@@ -258,9 +258,9 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 			if(submission.exists()):
 				context_dict['submission'] = submission[0]
 		
-			if request.method == 'POST':
+			if(request.method == 'POST'):
 				form = StudentSubmissionForm(request.POST, request.FILES)
-				if form.is_valid():
+				if(form.is_valid()):
 					sub = form.save(commit=False)
 					sub.submissionDate = datetime.now()
 					sub = StudentSubmission.objects.update_or_create(student=student, assignment=assessment,
@@ -272,7 +272,7 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 		
 		#handles staff or admin			
 		else:
-			if request.method == 'POST':
+			if(request.method == 'POST'):
 
 				markForm = MarkingForm(request.POST, student='')
 				context_dict['markForm'] = markForm
@@ -340,14 +340,14 @@ def registerStaff(request):
 	if request.method == 'POST':
 		user_form = UserForm(data=request.POST)
 		profile_form = StaffUserProfileForm(data=request.POST)
-		if user_form.is_valid() and profile_form.is_valid():
+		if (user_form.is_valid() and profile_form.is_valid()):
 			user = user_form.save()
 			user.set_password(user.password)
 			user.save()
 			
 			profile = profile_form.save(commit=False)
 			profile.user = user
-			if 'picture' in request.FILES:
+			if ('picture' in request.FILES):
 				profile.picture = request.FILES['picture']
 			profile.save()
 			
@@ -368,10 +368,10 @@ def registerStaff(request):
 		'profile_form': profile_form})
 
 def registerStudent(request):
-	if request.method == 'POST':
+	if(request.method == 'POST'):
 		user_form = UserForm(data=request.POST)
 		profile_form = StudentUserProfileForm(data=request.POST)
-		if user_form.is_valid() and profile_form.is_valid():
+		if(user_form.is_valid() and profile_form.is_valid()):
 		
 			user = user_form.save()
 			user.set_password(user.password)
@@ -384,7 +384,7 @@ def registerStudent(request):
 			courses = Course.objects.filter(subject=Subject.objects.filter(name=profile.subject))
 			for course in courses:
 				profile.enrolledIn.add(course)
-			if 'picture' in request.FILES:
+			if('picture' in request.FILES):
 				profile.picture = request.FILES['picture']
 			profile.save()
 			
@@ -404,8 +404,8 @@ def user_login(request):
 		username = request.POST.get('username')
 		password = request.POST.get('password')
 		user = authenticate(username=username, password=password)
-		if user:
-			if user.is_active:
+		if(user.is_authenticated()):
+			if(user.is_active()):
 				login(request, user)
 				return HttpResponseRedirect(reverse('homepage'))
 			else:
@@ -461,7 +461,7 @@ def visitUpdater(request, course):
 						
 def search(request):
 	result_list = []
-	if request.method == 'POST':
+	if(request.method == 'POST'):
 		query = request.POST['query'].strip()
 		if query:
 			result_list = run_query(query)
