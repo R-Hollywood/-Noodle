@@ -121,14 +121,40 @@ class UserForm(forms.ModelForm):
 		return self.cleaned_data
 
 class StudentUserProfileForm(forms.ModelForm):
-
+	
+	subject = forms.ChoiceField(choices=[])
+	
+	def __init__(self, *args, **kwargs):
+		super(StudentUserProfileForm, self).__init__(*args, **kwargs)
+	
+		subjects = Subject.objects.all()
+		
+		subjectList = []
+		for subject in subjects:
+			subjectList.append((subject.name,subject.name))
+		
+		self.fields['subject'].choices = subjectList
+		
 	class Meta:
 		model = Student
-		fields = ('subject', 'yearOfStudy',)
-
-
+		fields = ('subject', 'yearOfStudy')
+		
 class StaffUserProfileForm(forms.ModelForm):
+
+	subject = forms.ChoiceField(choices=[])
+	
+	def __init__(self, *args, **kwargs):
+		super(StaffUserProfileForm, self).__init__(*args, **kwargs)
+		
+		subjects = Subject.objects.all()
+		
+		subjectList = []
+		for subject in subjects:
+			subjectList.append((subject.name,subject.name))
+		
+		self.fields['subject'].choices = subjectList
 
 	class Meta:
 		model = Staff
 		fields = ('subject', 'status',)
+	

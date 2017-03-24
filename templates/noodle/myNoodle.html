@@ -13,13 +13,18 @@
 			MyNoodle
 			</div>
 			Username: {{user}}<br />
-			{{% if tier %}}
-			Status: {{status}}<br />
-			Subject: {{subject}}<br />
-			{{% else %}}
-			Year of Study: {{yearOfStudy}}<br />
-			Courses: {{enrolledIn}}<br />
-			{{% endif %}}
+			{% if tier == 1 %}
+				Status: {{user.staff.status}}<br />
+				Subject: {{user.staff.subject}}<br />
+			{% else %}
+				Year of Study: {{user.student.yearOfStudy}}<br />
+				Subject: {{user.student.subject}}</br>
+				{% if courses %}
+					Courses: {{user.student.enrolledIn}}<br />
+				{% else %}
+					Courses: None!<br />
+				{% endif %}
+			{% endif %}
 		</div>
 	</div>
 	<button onclick="goBack()">Go Back</button>

@@ -37,7 +37,7 @@ def home(request):
 	if(user.is_authenticated()):
 		if(hasattr(user, 'admin') and user.admin != None):
 			return HttpResponseRedirect(reverse('noodle:teachhome'))
-	
+		
 		if(hasattr(user, 'staff') and user.staff != None):
 			return HttpResponseRedirect(reverse('noodle:teachhome'))
 		
@@ -48,8 +48,10 @@ def home(request):
 @login_required
 def myNoodle(request):
         return render(request,'noodle/myNoodle.html', {})
+		
 @login_required
 def teachhome(request):
+
 	context_dict = {}
 	context_dict['myCourses'] = pager(request, Course.objects.filter(staffManagers__in=[request.user]), 10)
 	context_dict['subjects'] = pager(request, Subject.objects.all(), 10)
@@ -71,11 +73,12 @@ def teachhome(request):
 	
 @login_required
 def studenthome(request):
+			
 	context_dict = {}
 	context_dict['myCourses'] = pager(request, Course.objects.filter(enrolledStudents__in=[request.user.student]), 10)
 	context_dict['subjects'] = pager(request, Subject.objects.all(), 10)
 	context_dict['courses'] = pager(request, Course.objects.all(), 10)
-	recentCourses = VisitedCourse.objects.all()[:5]
+	recentCourses = VisitedCourse.objects.filter(student = request.user.student)[:5]
 	context_dict['recentCourses'] = []
 	for recentCourse in recentCourses:
 		(context_dict['recentCourses']).append(recentCourse.course)
@@ -98,6 +101,7 @@ def show_subject(request, subject_name_slug):
 				if subject:
 					course = form.save(commit=False)
 					course.subject = subject
+					course.save()
 					course.staffManagers.add(request.user)
 					course.save()
 					request.method = 'GET'
@@ -116,14 +120,12 @@ def show_subject(request, subject_name_slug):
 def show_course(request, subject_name_slug, course_name_slug):
 	context_dict = {}
 	try:
-		print 'memel'
 		course = Course.objects.get(slug=course_name_slug)
-		print course
 		subject = course.subject
 		material = Material.objects.filter(courseFrom=course)
+		
 		context_dict['subject'] = subject
 		context_dict['course'] = course
-		print course
 		context_dict['material'] = material
 		context_dict['files'] = pager(request, Material.objects.filter(courseFrom=course, assessment=None), 10)
 		context_dict['assignments'] = pager(request, Material.objects.filter(courseFrom=course, file=None), 10)
@@ -234,7 +236,9 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 		assessment = Assessment.objects.get(slug=assessment_name_slug)
 		context_dict['course'] = course
 		context_dict['assessment'] = assessment
-		student = Student.objects.get(user=request.user)
+		student = 0
+		if(hasattr(request.user, 'student') and request.user.student != None):
+			student = Student.objects.get(user=request.user)
 		
 		form = StudentSubmissionForm()
 		if request.method == 'POST':
@@ -254,7 +258,6 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 		submission = StudentSubmission.objects.filter(assignment=assessment, student=student)
 		
 		if(submission.exists()):
-			print submission
 			submission = submission[0]
 		
 			start_time = submission.submissionDate
@@ -263,11 +266,10 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 			time_delta = ''
 			if(end_time >= start_time):
 				time_delta = end_time - start_time
-				context_dict['submission_string'] = str(timedelta(seconds = 3))
-				context_dict['submission_string'] = "You are before the deadline by" + str(timedelta(time_delta))
+				context_dict['submission_string'] = "You are before the deadline by" + str(time_delta)
 			else:
 				time_delta = start_time - end_time
-				context_dict['submission_string'] = "You are late for the deadline by" + str(timedelta(time_delta))
+				context_dict['submission_string'] = "You are late for the deadline by" + str(time_delta)
 		
 	except Course.DoesNotExist:
 		context_dict['assessment'] = None
@@ -285,12 +287,20 @@ def registerStaff(request):
 			user = user_form.save()
 			user.set_password(user.password)
 			user.save()
+			
 			profile = profile_form.save(commit=False)
 			profile.user = user
 			if 'picture' in request.FILES:
 				profile.picture = request.FILES['picture']
 			profile.save()
+			
+			courses = Course.objects.filter(subject=Subject.objects.filter(name=profile.subject))
+			for course in courses:
+				user.courses.add(course)
+			user.save()
+			
 			return render(request, 'noodle/register.html', {'registered':True})
+		
 		else:
 			print(user_form.errors, profile_form.errors)
 	else:
@@ -305,15 +315,24 @@ def registerStudent(request):
 		user_form = UserForm(data=request.POST)
 		profile_form = StudentUserProfileForm(data=request.POST)
 		if user_form.is_valid() and profile_form.is_valid():
+		
 			user = user_form.save()
 			user.set_password(user.password)
 			user.save()
+			
 			profile = profile_form.save(commit=False)
 			profile.user = user
+			profile.save()
+			
+			courses = Course.objects.filter(subject=Subject.objects.filter(name=profile.subject))
+			for course in courses:
+				profile.enrolledIn.add(course)
 			if 'picture' in request.FILES:
 				profile.picture = request.FILES['picture']
 			profile.save()
+			
 			return render(request, 'noodle/register.html', {'registered':True})
+			
 		else:
 			print(user_form.errors, profile_form.errors)
 	else:

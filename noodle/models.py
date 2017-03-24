@@ -39,7 +39,7 @@ class Subject(models.Model):
 	slug = models.SlugField(unique=True)
 	
 	class Meta:
-		ordering = ['name']
+		ordering = ['slug']
 	
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)
@@ -60,7 +60,7 @@ class Course(models.Model):
 	staffManagers = models.ManyToManyField(User, related_name = 'courses')
 	
 	class Meta:
-		ordering = ['name']
+		ordering = ['slug']
 	
 	def save(self, *args, **kwargs):
 		self.slug = slugify(self.name)

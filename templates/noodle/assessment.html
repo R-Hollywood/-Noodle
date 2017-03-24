@@ -19,10 +19,10 @@
 			</br>
 			Deadline: {{ assessment.deadline }}
 			</br>
-			{% if assessment.user_submission.file %}
+			{% if assessment.user_submission.file and not tier %}
 				<!-- Download File-->
 				{{ submission_string }}
-			{% else %}
+			{% elif not tier %}
 				You have not yet submitted a file!
 			{% endif %}
 			</br>
