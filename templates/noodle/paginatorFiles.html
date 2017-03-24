@@ -2,18 +2,17 @@
 
 <!--Note: This is not a standalone HTML file but a helper
     to set out page structure-->
-<!--It requires a page (items), a 'base url' for each item
-	(for example the base url to show_courses before regex)
+<!--It requires a page (items)
 	and for each item in items to have both a name and a slug-->
 
 {% block page_block %}
-	{% for materialS in material %}
+	{% for item in items %}
 	<ul>
 		
 	<br />
-		{% if materialS.materialFile.file %}
-			{% if materialS.visibility or tier %}
-				<li><a href="{{ materialS.materialFile.file.url }}">{{ materialS.name }}</a></li>
+		{% if item.materialFile.file %}
+			{% if item.visibility or tier %}
+				<li><a href="{{ item.materialFile.file.url }}">{{ item.name }}</a></li>
 			{% endif %}
 		{% endif %}
 	</ul>

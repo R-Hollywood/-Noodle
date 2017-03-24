@@ -31,11 +31,10 @@
 	<br />
 		<div id="menu">
 		<div id="sidebar">
-			Assignments
+			Upcoming Assignments
 		</div>
 		<ul>
-		<!-- This area should display links to Assignments due in the next 7 days-->
-		<li>{% include 'noodle/paginator.html' with items=assignmentPages find_assignment=True %}</li>
+		<li>{% include 'noodle/paginatorAssessments.html' with items=myAssignments %}</li>
 		</ul>
 		</div>
 		<div id="frameStu">

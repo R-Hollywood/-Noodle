@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import os
 from django.conf import settings
 from django.utils.encoding import smart_str
@@ -9,12 +8,14 @@ from noodle.models import *
 from noodle.forms import *
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
+from django.http import StreamingHttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime
 from datetime import timedelta
 from noodle.webhose_search import run_query
+import pytz
 
 
 def render(request, page, context_dict):
@@ -84,13 +85,31 @@ def teachhome(request):
 def studenthome(request):
 			
 	context_dict = {}
-	context_dict['myCourses'] = pager(request, Course.objects.filter(enrolledStudents__in=[request.user.student]), 10)
+	myCourses = Course.objects.filter(enrolledStudents__in=[request.user.student])
+	context_dict['myCourses'] = pager(request, myCourses, 10)
 	context_dict['subjects'] = pager(request, Subject.objects.all(), 10)
 	context_dict['courses'] = pager(request, Course.objects.all(), 10)
+	
 	recentCourses = VisitedCourse.objects.filter(student = request.user.student)[:5]
+	
 	context_dict['recentCourses'] = []
 	for recentCourse in recentCourses:
 		(context_dict['recentCourses']).append(recentCourse.course)
+		
+	myAssignments = []
+	for course in myCourses:
+		materials=Material.objects.filter(courseFrom=course)
+		for material in materials:
+			assessment = Assessment.objects.filter(material=material)
+			if(assessment.exists()):
+				myAssignments.append(assessment[0])
+	
+	context_dict['myAssignments'] = []
+	for assignment in myAssignments:
+		future_assignment = (assignment.deadline).replace(tzinfo=None) - (datetime.now()).replace(tzinfo=None)
+		if((datetime.now()).replace(tzinfo=None) < (assignment.deadline).replace(tzinfo=None) and timedelta(days=7) > future_assignment):
+			context_dict['myAssignments'].append(assignment)
+	context_dict['myAssignments'] = pager(request, context_dict['myAssignments'], 10)
 	
 	return render(request,'noodle/studenthome.html', context_dict)
 	
@@ -477,6 +496,6 @@ def download(request, path):
 	fileName = os.path.basename(path)
 	wrapper = FileWrapper(open(path, "r"))
 	content_type = mimetypes.guess_type(path)[0]
-	response = HttpResponse(wrapper, content_type = content_type)
-	response['Content-Disposition'] = "attachment; filename=%s/" % fileName
+	response = StreamingHttpResponse(wrapper, content_type = content_type)
+	response['Content-Disposition'] = "attachment; filename=%s" % fileName
 	return response

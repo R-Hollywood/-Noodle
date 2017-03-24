@@ -128,7 +128,7 @@ def populate():
 		 'course': 'History2',
 		 'datePosted': datetime.datetime(1776,6,4),
 		 'file': os.path.join(settings.STATIC_DIR, r'testfiles\independence_day.jpg',),
-		 'fileName': 'independence_day.jpg'},
+		 'fileName': 'independence_day.txt'},
 		{'name': 'Leviathan',
 		 'visibility': False,
 		 'course': 'Philosophy2',

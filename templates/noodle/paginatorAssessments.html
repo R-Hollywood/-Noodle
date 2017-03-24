@@ -2,25 +2,15 @@
 
 <!--Note: This is not a standalone HTML file but a helper
     to set out page structure-->
-<!--It requires a page (items), a mode
+<!--It requires a page (items)
 	and for each item in items to have both a name and a slug-->
 
 {% block page_block %}
 	{% for item in items %}
-	<ul>
-	<br />
-		{% if find_course %}
-			<li><a href="{% url 'noodle:show_course' item.subject.slug item.slug %}">{{ item.name }}</a></li>
-		{% elif find_file %}
-			<li><a href="{{ item.file.file.url }}">{{ item.name }}</a></li>
-		{% elif find_subject %}
-			<li><a href="{% url 'noodle:show_subject' item.slug %}">{{ item.name }}</a></li>
-		{% elif base_url %}
-			<li><a href="{{base_url}}{{item.slug}}/">{{ item.name }}</a></li>
-		{% else %}
-			<li><a href="{{request.get_full_path}}{{item.slug}}/">{{ item.name }}</a></li>
-		{% endif %}
-	</ul>
+			
+			{% if tier or item.material.visibility %}
+				<li><a href="{% url 'noodle:show_assessment' item.material.courseFrom.subject.slug item.material.courseFrom.slug item.slug %}">{{ item.material.name }}</a></li>
+			{% endif %}
 		
 	{% endfor %}
 	
