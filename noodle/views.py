@@ -14,7 +14,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime
 from datetime import timedelta
-from noodle.webhose_search import run_query
 from noodle.webhose_search import query1
 import pytz
 
