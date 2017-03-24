@@ -405,11 +405,8 @@ def user_login(request):
 		password = request.POST.get('password')
 		user = authenticate(username=username, password=password)
 		if(request.user):
-			if(request.user.is_active()):
-				login(request, user)
-				return HttpResponseRedirect(reverse('homepage'))
-			else:
-				return HttpResponse("Your Noodle account is disabled.")
+			login(request, user)
+			return HttpResponseRedirect(reverse('homepage'))
 		else:
 			print("Invalid login details: {0}, {1}".format(username, password))
 			return HttpResponse("Invalid login details supplied. Invalid email or password.")
