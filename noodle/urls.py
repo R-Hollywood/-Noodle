@@ -11,7 +11,7 @@ urlpatterns= [ url(r'^$',views.home, name='homepage'),
     url(r'studenthome/',views.studenthome, name='studenthome'),
     url(r'teachhome/',views.teachhome, name='teachhome'),
 	url(r'search/$', views.search, name='search'),
-        url(r'myNoodle/$', views.myNoodle, name='myNoodle'),
+    url(r'myNoodle/$', views.myNoodle, name='myNoodle'),
 	url(r'^pager_debug/$',views.test_pagination,name='pager_debug'),
 	
 	url(r'^(?P<subject_name_slug>[\w\-]+)/$', 

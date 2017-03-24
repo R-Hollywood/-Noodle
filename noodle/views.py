@@ -1,3 +1,8 @@
+import os
+from django.conf import settings
+from django.utils.encoding import smart_str
+from wsgiref.util import FileWrapper
+import mimetypes
 from django import shortcuts
 from noodle.models import *
 from noodle.forms import *
@@ -47,7 +52,7 @@ def home(request):
 
 @login_required
 def myNoodle(request):
-        return render(request,'noodle/myNoodle.html', {})
+    return render(request,'noodle/myNoodle.html', context_dict)
 		
 @login_required
 def teachhome(request):
@@ -317,10 +322,10 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 			time_delta = ''
 			if(end_time >= start_time):
 				time_delta = end_time - start_time
-				context_dict['submission_string'] = "You are before the deadline by " + str(time_delta)
+				context_dict['submission_string'] = "Submitted before the deadline by " + str(time_delta)
 			else:
 				time_delta = start_time - end_time
-				context_dict['submission_string'] = "You are late for the deadline by " + str(time_delta)
+				context_dict['submission_string'] = "Late for the deadline by " + str(time_delta)
 		
 	except Course.DoesNotExist:
 		context_dict['assessment'] = None
@@ -461,3 +466,13 @@ def search(request):
 		if query:
 			result_list = run_query(query)
 	return render(request, 'noodle/search.html', {'result_list': result_list})
+
+def download(request, path):
+	path = os.path.join(settings.MEDIA_ROOT, path)
+	path = os.path.normpath(path)
+	fileName = os.path.basename(path)
+	wrapper = FileWrapper(open(path, "r"))
+	content_type = mimetypes.guess_type(path)[0]
+	response = HttpResponse(wrapper, content_type = content_type)
+	response['Content-Disposition'] = "attachment; filename=%s/" % fileName
+	return response

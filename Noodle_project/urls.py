@@ -10,5 +10,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^noodle/',include('noodle.urls')),
     url(r'^$',views.home, name='homepage'),
-
+	url(r'^media\/(?P<path>.*)$', views.download, name='download'),
 ]
