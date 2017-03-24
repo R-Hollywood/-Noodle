@@ -3,56 +3,30 @@ import urllib
 import urllib2
 
 
-def read_webhose_key():
+def query1(terms, size=20):
+    root = 'http://webhose.io/search'
 
-    webhose_api_key = None
+    query_string = urllib.quote(terms)
 
-    try:
-        with open('search.key', 'r') as f:
-            webhose_api_key = f.readline().strip()
-    except:
-        raise IOError('search.key file not found')
-
-    return webhose_api_key
-
-
-def run_query(search_terms, size=10):
-
-    webhose_api_key = read_webhose_key()
-
-    if not webhose_api_key:
-        raise KeyError('Webhose key not found')
-
-
-    root_url = 'http://webhose.io/search'
-
-
-    query_string = urllib.quote(search_terms)
-
-    search_url = '{root_url}?token={key}&format=json&q={query}&sort=relevancy&size={size}'.format(
-        root_url=root_url,
-        key=webhose_api_key,
+    url = '{root_url}?token={key}&format=json&q={query}&sort=relevancy&size={size}'.format(
+        root_url=root,
+        key='01fd6583-6c03-484e-9af5-399d8e85e495',
         query=query_string,
         size=size)
-
-    results = []
-
     try:
 
-        print(search_url)
-        response = urllib2.urlopen(search_url).read()
-        print(response)
-        json_response = json.loads(response)
+        search_results = []
+        print(url)
+        resp = urllib2.urlopen(url).read()
+        print(resp)
+        json_resp = json.loads(resp)
 
-
-        for post in json_response['posts']:
+        for post in json_resp['posts']:
             print(post['title'])
-            results.append({'title': post['title'],
-                            'link': post['url'],
-                            'summary': post['text'][:200]})
-    except Exception as e:
-        print(e)
-        print("Error when querying the Webhose API")
+            search_results.append({'title': post['title'],
+                                   'link': post['url'],
+                                   'summary': post['text'][:150]})
 
-
-    return results
+    except Exception as error:
+        print(error)
+    return search_results

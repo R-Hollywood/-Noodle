@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.staticfiles import finders
+from django.core.urlresolvers import reverse
 from noodle.models import Staff
 from noodle.models import Student
 from noodle.models import User
@@ -18,6 +19,7 @@ class SimpleTest(TestCase):
         """
         self.assertEqual(1 + 1, 2)
 
+#Test serving static files
 class GeneralTests(TestCase):
     def test_serving_static_files(self):
         result = finders.find('images/logo.gif')
@@ -27,13 +29,13 @@ class GeneralTests(TestCase):
         result = finders.find('images/homepage_image.jpg')
         self.assertIsNotNone(result)
 
+#Test home page
 class NoodleViewTestCase(TestCase):
     def test_welcome_message(self):
         resp = self.client.get('/noodle/')
         self.assertEqual(resp.status_code, 200)
         self.assertIn('Welcome To Noodle', resp.content)
 
-class NoodleViewTestCase(TestCase):
     def test_homepage(self):
         resp = self.client.get('/')
         self.assertEqual(resp.status_code, 200)
@@ -52,14 +54,19 @@ class NoodleViewTestCase(TestCase):
         resp = self.client.get('/noodle/')
         self.assertIn('Not The Learning Management Service You Need.', resp.content)
 
-class LoginViewTestCase(TestCase):
-    def test_login(self):
-        resp = self.client.get('/noodle/login/')
-        self.assertEqual(resp.status_code, 200)
-
+#test Register view
 class RegisterViewTestCase(TestCase):
     def test_register(self):
         resp = self.client.get('/noodle/register/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Staff Register here!', resp.content)
+        self.assertIn('Students Register here!', resp.content)
+        self.assertIn('Registration', resp.content)
+
+#Test login view
+class LoginViewTestCase(TestCase):
+    def test_login(self):
+        resp = self.client.get('/noodle/login/')
         self.assertEqual(resp.status_code, 200)
 
 class teachHomeViewTestCase(TestCase):
@@ -72,10 +79,24 @@ class teachHomeAdd_assessmentViewTestCase(TestCase):
         resp = self.client.post('/noodle/teachhome/add_assessment/',follow=True)
         self.assertEqual(resp.status_code, 200)
 
-class studenthHomeViewTestCase(TestCase):
-    def test_studenthome(self):
-        resp = self.client.get('/noodle/studenthome/')
+# Create test user and register
+class TestRegisterStudentTestCase(TestCase):
+    def test_register_student(self):
+        resp = self.client.post(reverse('noodle/register/student'),
+                                    {'username': 'test', 'password': 'testpassword',
+                                     'email': 'test@gmail.com',
+                                     'subject':'asd,',
+                                     'yearOfStudy':'1'})
         self.assertEqual(resp.status_code, 200)
+        self.assertIn('Thank you for Registering with Noodle.', resp.content)
+
+class TestRegisterStaffTestCase(TestCase):
+    def test_register_staff(self):
+        resp = self.client.post(reverse('noodle/register/staff'),
+                                    {'username': 'test', 'password': 'testpassword',
+                                     'email': 'test@gmail.com'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Thank you for Registering with Noodle.', resp.content)
 
 class studentHomeAdd_assessmentViewTestCase(TestCase):
     def test_add_asessment(self):
@@ -84,20 +105,16 @@ class studentHomeAdd_assessmentViewTestCase(TestCase):
 
 class logoutViewTestCase(TestCase):
     def test_logout(self):
+        self.client.post(reverse('noodle/register/student'),
+                         {'username': 'test', 'password': 'testpassword',
+                          'email': 'test@gmail.com',
+                          'subject': 'asd,',
+                          'yearOfStudy': '1'})
         resp = self.client.get('/noodle/logout/')
         self.assertEqual(resp.status_code, 200)
 
-class registerStudentTestCase(TestCase):
-    def test_register_student(self):
-        resp = self.client.get('/noodle/register/student')
 
-
-class registerStaffTestCase(TestCase):
-    def test_register_staff(self):
-        resp = self.client.get('/noodle/register/staff')
-
-
-
+# Test population script and add subjects
 class PopulateTest(TestCase):
 
     def test_setUp(self):
@@ -127,18 +144,46 @@ class PopulateTest(TestCase):
         subject = self.get_subject('Mathematics')
         self.assertIsNotNone(subject)
 
+# Test course model
 class CourseTest(TestCase):
 
     def test_Course(self):
         course = Course(name = 'WAD2')
         self.assertEqual(unicode(course), course.name)
 
+# Test the forms
+class FormsTesting(TestCase):
+    def test_forms(self):
+        try:
+            from forms import SubjectForm
+            from forms import CourseForm
+            from forms import MaterialForm
+            from forms import FileForm
+            from forms import AssignmentForm
+            from forms import StudentSubmissionForm
+            from forms import AnnouncementForm
+            from forms import UserForm
+            from forms import StudentUserProfileForm
+            from forms import StaffUserProfileForm
+            from forms import MarkingForm
+            from forms import StudentSearchForm
+
+            pass
+        except ImportError:
+            print('Error importing the module')
+
+        except:
+            print('Error')
+
+#slug test
+class SlugFieldTests(TestCase):
+
+    # tests if slug field works
+    def test_slug_field(self):
+        from noodle.models import Subject
+        subject = Subject(name='subject')
+        subject.save()
+        self.assertEqual(subject.slug,'subject')
 
 
-class RegisterViewTestCase(TestCase):
-    def test_register(self):
-        resp = self.client.get('/noodle/register/')
-        self.assertEqual(resp.status_code, 200)
-        self.assertIn('Staff Register here!', resp.content)
-        self.assertIn('Students Register here!', resp.content)
-        self.assertIn('Registration', resp.content)
+
