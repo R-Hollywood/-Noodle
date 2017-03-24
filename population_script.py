@@ -127,13 +127,13 @@ def populate():
 		 'visibility': True, 
 		 'course': 'History2',
 		 'datePosted': datetime.datetime(1776,6,4),
-		 'file': os.path.join(settings.STATIC_DIR, r'testfiles\independence_day.jpg',),
+		 'file': os.path.join(settings.STATIC_DIR, r'testfiles/independence_day.jpg',),
 		 'fileName': 'independence_day.txt'},
 		{'name': 'Leviathan',
 		 'visibility': False,
 		 'course': 'Philosophy2',
 		 'datePosted': datetime.datetime(2017,2,24),
-		 'file': os.path.join(settings.STATIC_DIR, r'testfiles\now.txt'),
+		 'file': os.path.join(settings.STATIC_DIR, r'testfiles/now.txt'),
 		 'fileName': 'now.txt'}]
 	
 	assessments = [
@@ -154,7 +154,7 @@ def populate():
 		 'datePosted': datetime.datetime(1526,1,20)}]
 		 
 	studentSubmissions = [
-		{'file': os.path.join(settings.STATIC_DIR, r'\testfiles\VE_day_newspaper-P.jpeg'),
+		{'file': os.path.join(settings.STATIC_DIR, r'/testfiles/VE_day_newspaper-P.jpeg'),
 		 'submissionDate': datetime.datetime(1945,5,8),
 		 'student': 'developer',
 		 'course': 'History2',

@@ -15,7 +15,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime
 from datetime import timedelta
 from noodle.webhose_search import query1
-import pytz
 
 
 def render(request, page, context_dict):
