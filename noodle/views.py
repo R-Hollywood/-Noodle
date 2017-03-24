@@ -214,7 +214,6 @@ def show_announcements(request, subject_name_slug, course_name_slug):
 	except Course.DoesNotExist:
 		context_dict['announcements'] = None
 		context_dict['course'] = None
-	print context_dict
 	return render(request, 'noodle/announcements.html', context_dict)
 	
 @login_required
@@ -307,7 +306,6 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 		
 		if(StudentSubmission.objects.filter(student=student, assignment=assessment).exists()):
 			context_dict['submission'] = StudentSubmission.objects.filter(student=student, assignment=assessment)[0]
-		print context_dict['submission']
 		
 		context_dict['submission_string'] = ''
 		submission = StudentSubmission.objects.filter(assignment=assessment, student=student)
@@ -330,7 +328,6 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 	except Course.DoesNotExist:
 		context_dict['assessment'] = None
 		context_dict['course'] = None
-	print context_dict['submission_string']
 	return render(request, 'noodle/assessment.html', context_dict)
 
 def register(request):
@@ -404,9 +401,12 @@ def user_login(request):
 		username = request.POST.get('username')
 		password = request.POST.get('password')
 		user = authenticate(username=username, password=password)
-		if(request.user):
-			login(request, user)
-			return HttpResponseRedirect(reverse('homepage'))
+		if user:
+			if user.is_active:
+				login(request, user)
+				return HttpResponseRedirect(reverse('homepage'))
+			else:
+				return HttpResponse("Your Noodle account is disabled.")
 		else:
 			print("Invalid login details: {0}, {1}".format(username, password))
 			return HttpResponse("Invalid login details supplied. Invalid email or password.")
