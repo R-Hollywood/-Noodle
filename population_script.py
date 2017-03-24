@@ -9,7 +9,7 @@ django.setup()
 import datetime
 
 from django.contrib.auth.models import User
-from noodle.models import Admin, Staff, Student, Course, Subject, VisitedCourse, Material, File, Assessment, Announcement
+from noodle.models import *
 from django.template.defaultfilters import slugify
 
 def populate():
@@ -110,52 +110,57 @@ def populate():
 		 'subject': 'Mathematics'}]
 		 
 	visited_courses = [
-	{'date': datetime.datetime(1610,07,04),
+	{'date': datetime.datetime(1610,7,4),
 	 'student': 'developer',
 	 'course': 'History2'}]
+	 
+	staff_visited_courses = [
+	{'date': datetime.datetime(1955,7,8),
+	'staffM': 'shogun',
+	'course': 'History2'}]
 		 
 	files = [
 		{'name': 'Independence Day', 
 		 'visibility': True, 
 		 'course': 'History2',
-		 'datePosted': datetime.datetime(1776,06,04),
+		 'datePosted': datetime.datetime(1776,6,4),
 		 'file': '<placeholder>'},
 		{'name': 'Leviathan',
 		 'visibility': False,
 		 'course': 'Philosophy2',
-		 'datePosted': datetime.datetime(2017,02,24),
+		 'datePosted': datetime.datetime(2017,2,24),
 		 'file': '<placeholder>'}]
 	
 	assessments = [
 		{'name': 'Operation Barbarossa', 
 		 'visibility': True, 
 		 'course': 'History2',
-		 'deadline': datetime.datetime(1942,06,22),
-		 'datePosted': datetime.datetime(1939,02,01)},
+		 'deadline': datetime.datetime(1942,6,22),
+		 'datePosted': datetime.datetime(1939,2,01)},
 		{'name': 'The Future of Philosophy',
 		 'visibility': True,
 		 'course':'Philosophy2',
-		 'deadline': datetime.datetime(2050,01,01),
-		 'datePosted': datetime.datetime(2017,03,24)},
+		 'deadline': datetime.datetime(2050,1,1),
+		 'datePosted': datetime.datetime(2017,3,24)},
 		{'name': 'Imaginary Numbers',
 		 'visibility': False,
 		 'course':'Mathematics2',
-		 'deadline': datetime.datetime(1819,01,27),
-		 'datePosted': datetime.datetime(1526,01,20)}]
+		 'deadline': datetime.datetime(1819,1,27),
+		 'datePosted': datetime.datetime(1526,1,20)}]
 		 
 	studentSubmissions = [
 		{'file': '<placeholder>',
-		 'submissionDate': datetime.datetime(1945,05,8),
+		 'submissionDate': datetime.datetime(1945,5,8),
 		 'student': 'developer',
 		 'course': 'History2'}]
 		 
 	announcements = [
 		{'name': "History2 Created!",
 		 'body': "Nice-Memel!",
-		 'date': datetime.datetime(1914, 06, 28),
+		 'date': datetime.datetime(1914, 6, 28),
 		 'course': 'History2'},
 		 {'name': "Philosophy2 Created!",
-		 'body': "This sentence is a lie.",
+		 'body': "This sentence is false.",
 		 'date': datetime.datetime(1648, 10, 24),
 		 'course': 'Philosophy2'},
 		 {'name': "Mathematics2 Created!",
@@ -196,9 +201,14 @@ def populate():
 	developer.enrolledIn.add(Course.objects.filter(name='Mathematics2')[0])
 					
 	for visited_course in visited_courses:
-		student = Student.objects.filter(user = User.objects.filter(username=visited_course['student']))[0]
+		student = Student.objects.filter(user=User.objects.filter(username=visited_course['student']))[0]
 		course = Course.objects.filter(name=visited_course['course'])[0]
 		add_visitedcourse(visited_course['date'], student, course)
+		
+	for visited_course in staff_visited_courses:
+		staffM = Staff.objects.filter(user=User.objects.filter(username=visited_course['staffM']))[0]
+		course = Course.objects.filter(name=visited_course['course'])[0]
+		add_staffvisitedcourse(visited_course['date'], staffM, course)
 					
 	for file in files:
 		course = Course.objects.filter(name=file['course'])[0]
@@ -264,7 +274,11 @@ def add_course(name, courseID, subject, managers):
 	
 def add_visitedcourse(date, student, course):
 	return VisitedCourse.objects.update_or_create(
-		student = student, course = course, defaults={'date': date})[0]
+		student=student, course=course, defaults={'date': date})[0]
+		
+def add_staffvisitedcourse(date, staffM, course):
+	return StaffVisitedCourse.objects.update_or_create(
+		staff=staffM, course=course, defaults={'date': date})[0]
 
 def add_material(name, visibility, course, staffCreator, datePosted):
 	return Material.objects.update_or_create(name = name, defaults={'visibility' : visibility, 

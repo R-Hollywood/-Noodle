@@ -19,13 +19,14 @@
 			</br>
 			Deadline: {{ assessment.deadline }}
 			</br>
-			{% if assessment.user_submission.file and not tier %}
+			{% if submission.file and not tier %}
 				<!-- Download File-->
 				{{ submission_string }}
 			{% elif not tier %}
 				You have not yet submitted a file!
 			{% endif %}
 			</br>
+			
 		{% if not tier %}
 			<form id="AssessmentForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data">
 				{% csrf_token %}

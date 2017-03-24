@@ -103,7 +103,7 @@ class VisitedCourse(models.Model):
 	def __unicode__(self): 
 		return self.student.name + "/" + self.course.name + "/" + date
 		
-class staffVisitedCourse(models.Model):
+class StaffVisitedCourse(models.Model):
 	date = models.DateTimeField()
 	
 	staff = models.ForeignKey(Staff, related_name='staffCourseVisit')
@@ -158,7 +158,6 @@ class File(models.Model):
 class Assessment(models.Model):
 	
 	material = models.OneToOneField(Material, unique = True)
-	submission = models.FileField(null = True)
 	#so paginator can access slug directly
 	slug = models.SlugField(unique=True)
 	deadline = models.DateTimeField()

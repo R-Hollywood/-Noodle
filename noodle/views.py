@@ -130,12 +130,7 @@ def show_course(request, subject_name_slug, course_name_slug):
 		context_dict['files'] = pager(request, Material.objects.filter(courseFrom=course, assessment=None), 10)
 		context_dict['assignments'] = pager(request, Material.objects.filter(courseFrom=course, file=None), 10)
 		
-		#update student's visited courses
-		user = request.user
-		if(user.is_authenticated() and hasattr(user, 'student') and user.student != None):
-			VisitedCourse.objects.update_or_create(
-							student = user.student, course = course, 
-							defaults={'date': datetime.now()})[0]
+		visitUpdater(request, course)
 							
 		form = MaterialForm(courseName=course.name)
 		fileForm = FileForm()
@@ -193,6 +188,8 @@ def show_announcements(request, subject_name_slug, course_name_slug):
 		context_dict['course'] = course
 		context_dict['announcements'] = pager(request, announcements, 10)
 		
+		visitUpdater(request, course)
+		
 		form = AnnouncementForm(courseName=course.name)
 		if request.method == 'POST':
 			form = AnnouncementForm(request.POST, courseName=course.name)
@@ -223,6 +220,8 @@ def show_announcement(request, subject_name_slug, course_name_slug, announcement
 		announcement = Announcement.objects.get(slug=announcement_name_slug)
 		context_dict['course'] = course
 		context_dict['announcement'] = announcement
+		
+		visitUpdater(request, course)
 	except Course.DoesNotExist:
 		context_dict['announcement'] = None
 		context_dict['course'] = None
@@ -236,9 +235,14 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 		assessment = Assessment.objects.get(slug=assessment_name_slug)
 		context_dict['course'] = course
 		context_dict['assessment'] = assessment
-		student = 0
+	
+		student = ''
+		context_dict['submission'] = ''
+		
 		if(hasattr(request.user, 'student') and request.user.student != None):
 			student = Student.objects.get(user=request.user)
+			context_dict['submission'] = StudentSubmission.objects.filter(assignment=assessment, student=student)[0]
+			print context_dict['submission']
 		
 		form = StudentSubmissionForm()
 		if request.method == 'POST':
@@ -246,9 +250,9 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 			if form.is_valid():
 				sub = form.save(commit=False)
 				sub.submissionDate = datetime.now()
-				sub.assignment = assessment
-				sub.student = student
-				sub = form.save(commit=True)
+				sub = StudentSubmission.objects.update_or_create(student=student, assignment=assessment,
+										defaults={'submissionDate' : datetime.now(),
+													'file': sub.file})[0]
 				print(sub)
 				request.method = 'GET'
 				return show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug)
@@ -266,14 +270,15 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 			time_delta = ''
 			if(end_time >= start_time):
 				time_delta = end_time - start_time
-				context_dict['submission_string'] = "You are before the deadline by" + str(time_delta)
+				context_dict['submission_string'] = "You are before the deadline by " + str(time_delta)
 			else:
 				time_delta = start_time - end_time
-				context_dict['submission_string'] = "You are late for the deadline by" + str(time_delta)
+				context_dict['submission_string'] = "You are late for the deadline by " + str(time_delta)
 		
 	except Course.DoesNotExist:
 		context_dict['assessment'] = None
 		context_dict['course'] = None
+	print context_dict['submission_string']
 	return render(request, 'noodle/assessment.html', context_dict)
 
 def register(request):
@@ -388,7 +393,20 @@ def pager(request, object_list, perPage):
 		currPage = paginator.page(paginator.num_pages)
 	
 	return currPage
-
+	
+#updates recently visited courses for the purpose of subscription calculation
+def visitUpdater(request, course):
+	#update student's visited courses
+	user = request.user
+	if(user.is_authenticated() and hasattr(user, 'student') and user.student != None):
+		return VisitedCourse.objects.update_or_create(
+						student = user.student, course = course, 
+						defaults={'date': datetime.now()})[0]
+	elif(user.is_authenticated() and hasattr(user, 'staff') and user.staff != None):
+		return StaffVisitedCourse.objects.update_or_create(
+						staff=user.staff, course=course, 
+						defaults={'date': datetime.now()})[0]
+						
 def search(request):
 	result_list = []
 	if request.method == 'POST':
