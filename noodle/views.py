@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import os
 from django.conf import settings
 from django.utils.encoding import smart_str
@@ -14,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime
 from datetime import timedelta
-from noodle.webhose_search import run_query
+from noodle.webhose_search import query1
 
 
 def render(request, page, context_dict):
@@ -462,14 +461,14 @@ def visitUpdater(request, course):
 		return StaffVisitedCourse.objects.update_or_create(
 						staff=user.staff, course=course, 
 						defaults={'date': datetime.now()})[0]
-						
+
 def search(request):
-	result_list = []
+	results = []
 	if request.method == 'POST':
 		query = request.POST['query'].strip()
 		if query:
-			result_list = run_query(query)
-	return render(request, 'noodle/search.html', {'result_list': result_list})
+			results = query1(query)
+	return render(request, 'noodle/search.html', {'results': results})
 
 def download(request, path):
 	path = os.path.join(settings.MEDIA_ROOT, path)
