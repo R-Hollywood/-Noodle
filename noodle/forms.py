@@ -158,3 +158,32 @@ class StaffUserProfileForm(forms.ModelForm):
 		model = Staff
 		fields = ('subject', 'status',)
 	
+class MarkingForm(forms.ModelForm):
+	studentName = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+	def __init__(self, *args, **kwargs):
+		student = kwargs.pop('student')
+		super(MarkingForm, self).__init__(*args, **kwargs)
+	
+		if(student != ''):
+			self.fields['studentName'].initial = student
+		print "Markform"
+		print Student
+		
+	class Meta:
+		model = StudentSubmission
+		fields = ('mark', 'studentName')
+	
+class StudentSearchForm(forms.ModelForm):
+
+	class Meta:
+		model = User
+		fields = ('username',)
+		
+	def clean(self):
+		username = self.cleaned_data.get('username')
+		
+		student = Student.objects.filter(user=User.objects.filter(username = username))
+		
+		if(not student.exists()):
+			raise forms.ValidationError("No such student!")

@@ -228,7 +228,7 @@ def show_announcement(request, subject_name_slug, course_name_slug, announcement
 	return render(request, 'noodle/announcement.html', context_dict)
 	
 @login_required	
-def show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug):
+def show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug, student=None):
 	context_dict = {}
 	try:
 		course = Course.objects.get(slug=course_name_slug)
@@ -236,31 +236,78 @@ def show_assessment(request, subject_name_slug, course_name_slug, assessment_nam
 		context_dict['course'] = course
 		context_dict['assessment'] = assessment
 	
-		student = ''
 		context_dict['submission'] = ''
 		
+		form = StudentSubmissionForm()
+		#We use MarkingForm to hold student between passes
+		if(request.method == 'GET' and student != None):
+			markForm = MarkingForm(student=student.user.username)
+			context_dict['markForm'] = markForm
+		searchForm = StudentSearchForm()
+		
+		#handles student
 		if(hasattr(request.user, 'student') and request.user.student != None):
 			student = Student.objects.get(user=request.user)
-			context_dict['submission'] = StudentSubmission.objects.filter(assignment=assessment, student=student)[0]
-			print context_dict['submission']
+			
+			submission =  StudentSubmission.objects.filter(assignment=assessment, student=student)
+			if(submission.exists()):
+				context_dict['submission'] = submission[0]
 		
-		form = StudentSubmissionForm()
-		if request.method == 'POST':
-			form = StudentSubmissionForm(request.POST, request.FILES)
-			if form.is_valid():
-				sub = form.save(commit=False)
-				sub.submissionDate = datetime.now()
-				sub = StudentSubmission.objects.update_or_create(student=student, assignment=assessment,
+			if request.method == 'POST':
+				form = StudentSubmissionForm(request.POST, request.FILES)
+				if form.is_valid():
+					sub = form.save(commit=False)
+					sub.submissionDate = datetime.now()
+					sub = StudentSubmission.objects.update_or_create(student=student, assignment=assessment,
 										defaults={'submissionDate' : datetime.now(),
-													'file': sub.file})[0]
-				print(sub)
-				request.method = 'GET'
-				return show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug)
+													'file': sub.file})
+					print(sub)
+					request.method = 'GET'
+					return show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug)
+		
+		#handles staff or admin			
+		else:
+			if request.method == 'POST':
+
+				markForm = MarkingForm(request.POST, student='')
+				context_dict['markForm'] = markForm
+				searchForm = StudentSearchForm(request.POST)
+				
+				if(markForm.is_valid()):
+					student = (Student.objects.filter(user=User.objects.filter(username=markForm.cleaned_data.get('studentName'))))[0]
+					if(StudentSubmission.objects.filter(student=student, assignment=assessment).exists()):
+						sub = StudentSubmission.objects.update_or_create(student=student, assignment=assessment,
+										defaults={'mark': markForm.cleaned_data.get('mark')})[0]
+						context_dict['submission'] = sub
+						print(sub)
+						#here student is an object
+					request.method = 'GET'
+					return show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug, student=student)
+						
+				elif(searchForm.is_valid()):
+					sea = searchForm.save(commit=False)
+					student = Student.objects.filter(user=User.objects.filter(username=sea.username))
+					if(student.exists()):
+						#here student is a queryset
+						request.method = 'GET'
+						return show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug, student=student[0])
+					else:
+						request.method = 'GET'
+						return show_assessment(request, subject_name_slug, course_name_slug, assessment_name_slug)
+						
 		context_dict['form'] = form
+		context_dict['searchForm'] = searchForm
+		
+		context_dict['student'] = student
+		
+		if(StudentSubmission.objects.filter(student=student, assignment=assessment).exists()):
+			context_dict['submission'] = StudentSubmission.objects.filter(student=student, assignment=assessment)[0]
+		print context_dict['submission']
 		
 		context_dict['submission_string'] = ''
 		submission = StudentSubmission.objects.filter(assignment=assessment, student=student)
 		
+		#submission time calculations
 		if(submission.exists()):
 			submission = submission[0]
 		

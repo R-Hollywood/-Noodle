@@ -20,12 +20,32 @@
 			Deadline: {{ assessment.deadline }}
 			</br>
 			{% if submission.file and not tier %}
-				<!-- Download File-->
+				<a href="{{submission.file.url}}">Download</a></br>
 				{{ submission_string }}
 			{% elif not tier %}
 				You have not yet submitted a file!
+			{% elif submission.file and student %}
+				Student: {{student}} </br>
+				<a href="{{submission.file.url}}">Download</a></br>
+				{{ submission_string }}</br>
+				
+				<button id="visibilityButtonMark" type="button">Mark</button>
+				</br>
+				<form id="MarkingForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data" display=none>
+				{% csrf_token %}
+				{{ markForm.as_p }}
+				<input type="submit" name="submit" value="Submit" />
+				</form>
+	
+				<script src={% static 'js/visibilityButton.js' %}></script>
+				<script>
+					visibilityButton("{{request.get_full_path}}", "visibilityButtonMark", "MarkingForm");
+				</script>
 			{% endif %}
 			</br>
+			{% if submission.mark %}
+				Comments: {{ submission.mark }} </br>
+			{% endif %}
 			
 		{% if not tier %}
 			<form id="AssessmentForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data">
@@ -34,10 +54,23 @@
 			<input type="submit" name="submit" value="Add" />
 			</form>
 		{% elif tier %}
+			<button id="visibilityButtonFind" type="button">Find Student</button>
+			</br>
+			<form id="FindStudentForm" method="post" action="{{request.get_full_path}}" enctype="multipart/form-data" display=none>
+				{% csrf_token %}
+				Find Student by username (exact match only):
+				{{ searchForm.as_p }}
+			<input type="submit" name="submit" value="Search" />
+			</form>
+	
+			<script src={% static 'js/visibilityButton.js' %}></script>
+			<script>
+				visibilityButton("{{request.get_full_path}}", "visibilityButtonFind", "FindStudentForm");
+			</script>
 		{% endif %}
 		</div>
 
-		<a href="{% url 'noodle:show_course' course.subject.slug course.slug %}">Back to Course</a>
+		<button><a href="{% url 'noodle:show_course' course.subject.slug course.slug %}">Back to Course</a></button>
 	</section>
 	
 	{% endblock %}
