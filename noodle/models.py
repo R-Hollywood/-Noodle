@@ -135,9 +135,9 @@ class Material(models.Model):
 	def __unicode__(self): 
 		return self.name
 
-class File(models.Model):
+class Doc(models.Model):
 	
-	material = models.OneToOneField(Material, unique = True)
+	material = models.OneToOneField(Material, unique = True, related_name='materialFile')
 	file = models.FileField(upload_to='noodle/uploads/%Y/%m/%d')
 	#so paginator can access slug directly
 	slug = models.SlugField(unique=True)
@@ -147,7 +147,7 @@ class File(models.Model):
 	
 	def save(self, *args, **kwargs):
 		self.slug = self.material.slug
-		super(File, self).save(*args, **kwargs)
+		super(Doc, self).save(*args, **kwargs)
 
 	def __str__(self): 
 		return self.material.name
@@ -157,7 +157,7 @@ class File(models.Model):
 
 class Assessment(models.Model):
 	
-	material = models.OneToOneField(Material, unique = True)
+	material = models.OneToOneField(Material, unique = True, related_name='assessment')
 	#so paginator can access slug directly
 	slug = models.SlugField(unique=True)
 	deadline = models.DateTimeField()

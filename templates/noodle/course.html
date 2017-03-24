@@ -26,7 +26,7 @@
 		</div>
 	
 		<ul>
-			{% include 'noodle/paginator.html' with items=assignments find_assessments=true %}
+			{% include 'noodle/paginator.html' with items=assignments %}
 		</ul>
 		</div>
 		<div id="menu2">
@@ -34,7 +34,7 @@
 			<h2>Files</h2>
 		</div>
 			<ul>
-			{% include 'noodle/paginator.html' with items=files %}
+			{% include 'noodle/paginatorFiles.html' with items=files %}
 			</ul>
 		</div>
 		

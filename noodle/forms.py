@@ -55,7 +55,7 @@ class MaterialForm(forms.ModelForm):
 class FileForm(forms.ModelForm):
 	
 	class Meta:
-		model = File
+		model = Doc
 		fields = ('file',)
 
 class AssignmentForm(forms.ModelForm):

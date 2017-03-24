@@ -20,7 +20,10 @@
 				Year of Study: {{user.student.yearOfStudy}}<br />
 				Subject: {{user.student.subject}}</br>
 				{% if courses %}
-					Courses: {{courses}}<br />
+					Courses:</br>
+					{% for course in courses %}
+						{{course}} <br />
+					{% endfor %}
 				{% else %}
 					Courses: None!<br />
 				{% endif %}

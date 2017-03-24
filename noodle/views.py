@@ -52,7 +52,10 @@ def home(request):
 
 @login_required
 def myNoodle(request):
-    return render(request,'noodle/myNoodle.html', context_dict)
+	context_dict = {}
+	if(Course.objects.filter(enrolledStudents__user = request.user).exists()):
+		context_dict['courses'] = Course.objects.filter(enrolledStudents__user = request.user)
+	return render(request,'noodle/myNoodle.html', context_dict)
 		
 @login_required
 def teachhome(request):
@@ -61,7 +64,7 @@ def teachhome(request):
 	context_dict['myCourses'] = pager(request, Course.objects.filter(staffManagers__in=[request.user]), 10)
 	context_dict['subjects'] = pager(request, Subject.objects.all(), 10)
 	context_dict['courses'] = pager(request, Course.objects.all(), 10)
-	context_dict['recentFiles'] = (File.objects.all())[:5]
+	context_dict['recentFiles'] = (Doc.objects.all())[:5]
 
 	form = SubjectForm()
 	if request.method == 'POST':
@@ -133,7 +136,7 @@ def show_course(request, subject_name_slug, course_name_slug):
 		context_dict['course'] = course
 		context_dict['material'] = material
 		context_dict['files'] = pager(request, Material.objects.filter(courseFrom=course, assessment=None), 10)
-		context_dict['assignments'] = pager(request, Material.objects.filter(courseFrom=course, file=None), 10)
+		context_dict['assignments'] = pager(request, Material.objects.filter(courseFrom=course, materialFile=None), 10)
 		
 		visitUpdater(request, course)
 							

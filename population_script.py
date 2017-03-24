@@ -7,6 +7,9 @@ django.setup()
 
 #note: the use of datetime objects may require running 'pip install pytz'
 import datetime
+from django.conf import settings
+from django.core.files import File
+from django.core.files.base import ContentFile
 
 from django.contrib.auth.models import User
 from noodle.models import *
@@ -124,12 +127,14 @@ def populate():
 		 'visibility': True, 
 		 'course': 'History2',
 		 'datePosted': datetime.datetime(1776,6,4),
-		 'file': '<placeholder>'},
+		 'file': os.path.join(settings.STATIC_DIR, r'testfiles\independence_day.jpg',),
+		 'fileName': 'independence_day.jpg'},
 		{'name': 'Leviathan',
 		 'visibility': False,
 		 'course': 'Philosophy2',
 		 'datePosted': datetime.datetime(2017,2,24),
-		 'file': '<placeholder>'}]
+		 'file': os.path.join(settings.STATIC_DIR, r'testfiles\now.txt'),
+		 'fileName': 'now.txt'}]
 	
 	assessments = [
 		{'name': 'Operation Barbarossa', 
@@ -149,10 +154,11 @@ def populate():
 		 'datePosted': datetime.datetime(1526,1,20)}]
 		 
 	studentSubmissions = [
-		{'file': '<placeholder>',
+		{'file': os.path.join(settings.STATIC_DIR, r'\testfiles\VE_day_newspaper-P.jpeg'),
 		 'submissionDate': datetime.datetime(1945,5,8),
 		 'student': 'developer',
-		 'course': 'History2'}]
+		 'course': 'History2',
+		 'fileName': 'VE_day_newspaper-P.jpeg'}]
 		 
 	announcements = [
 		{'name': "History2 Created!",
@@ -216,7 +222,7 @@ def populate():
 		#here we just take the first staff member for any given subject
 		staffCreator = (Staff.objects.filter(subject=subject)[0]).user
 		add_file(add_material(file['name'], file['visibility'],
-					course, staffCreator, file['datePosted']), file['file'])
+					course, staffCreator, file['datePosted']), file['file'], file['fileName'])
 	
 	for assessment in assessments:
 		course = Course.objects.filter(name=assessment['course'])[0]
@@ -285,10 +291,12 @@ def add_material(name, visibility, course, staffCreator, datePosted):
 										'courseFrom' : course, 'createdBy' : staffCreator, 
 										'datePosted':datePosted})[0]
 	
-def add_file(material, file):
-	f = File.objects.get_or_create(material = material)[0]
-	#f.file = file
-	f.save()
+def add_file(material, path, fileName):
+	f = Doc.objects.get_or_create(material = material)[0]
+	path = os.path.normpath(path)
+	file = open(path)
+	f.file.save(fileName, ContentFile(file))
+	file.close()
 	return f
 
 def add_assessment(material, deadline):
